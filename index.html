@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  <link rel="stylesheet" href="css/styles.css">
+  <title>Restaurant Reviews</title>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <h1><a href="/">Restaurant Reviews</a></h1>
+    </nav>
+  </header>
+
+  <main class="maincontent">
+    <section class="map-container">
+      <div class="map"></div>
+    </section>
+    <section>
+      <div class="filter-options">
+        <h2>Filter Results</h2>
+        <select class="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+          <option value="all">All Neighborhoods</option>
+        </select>
+        <select class="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+          <option value="all">All Cuisines</option>
+        </select>
+      </div>
+      <ul class="restaurants-list"></ul>
+    </section>
+  </main>
+
+  <script src="js/dbhelper.js"></script>
+  <script src="js/main.js"></script>
+  <script src="keys.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=+AIzaSyDyaTj4E_iLSzX-Jkpi4R6emGL2nBYUs9s+&libraries=places&callback=initMap"></script>
+
+
+  <footer class="footer">
+    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+  </footer>
+
+</body>
+
+</html>
