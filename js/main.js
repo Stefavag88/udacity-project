@@ -19,10 +19,10 @@ fetchNeighborhoods = () => {
   DBHelper.fetchNeighborhoods((error, neighborhoods) => {
     if (error) { // Got an error
       console.error(error);
-    } else {
-      self.neighborhoods = neighborhoods;
-      fillNeighborhoodsHTML();
+      return;
     }
+    self.neighborhoods = neighborhoods;
+    fillNeighborhoodsHTML();
   });
 }
 
@@ -46,10 +46,10 @@ fetchCuisines = () => {
   DBHelper.fetchCuisines((error, cuisines) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {
-      self.cuisines = cuisines;
-      fillCuisinesHTML();
-    }
+      return;
+    };
+    self.cuisines = cuisines;
+    fillCuisinesHTML();
   });
 }
 
@@ -99,10 +99,10 @@ updateRestaurants = () => {
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {
-      resetRestaurants(restaurants);
-      fillRestaurantsHTML();
+      return;
     }
+    resetRestaurants(restaurants);
+    fillRestaurantsHTML();
   })
 }
 
