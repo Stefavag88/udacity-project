@@ -98,7 +98,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.querySelector('.reviews-container');
   const title = document.createElement('h2');
-  title.innerHTML = 'Reviews';
+  title.innerHTML = 'REVIEWS';
   container.appendChild(title);
 
   if (!reviews) {
@@ -119,23 +119,49 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
-  const name = document.createElement('p');
+  li.classList.add('review-container');
+
+  const reviewInfo = document.createElement('div');
+  reviewInfo.classList.add('review-info');
+
+  const name = document.createElement('h4');
+  name.classList.add('review-name');
   name.innerHTML = review.name;
-  li.appendChild(name);
+  reviewInfo.appendChild(name);
 
-  const date = document.createElement('p');
-  date.innerHTML = review.date;
-  li.appendChild(date);
+  const rating = createRatingStars(review);
+  reviewInfo.appendChild(rating);
 
-  const rating = document.createElement('p');
-  rating.innerHTML = `Rating: ${review.rating}`;
-  li.appendChild(rating);
+  li.appendChild(reviewInfo);
 
-  const comments = document.createElement('p');
+  const comments = document.createElement('blockquote');
+  comments.classList.add('review-comments');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
+  const date = document.createElement('span');
+  date.classList.add('review-date');
+  date.innerHTML = review.date;
+  li.appendChild(date);
+
   return li;
+}
+
+/**
+ * Create rating stars to display to the review
+ */
+createRatingStars = ({rating}) => {
+  const ratingContainer = document.createElement('div');
+  ratingContainer.classList.add('review-rating');
+
+  for(let i = 1; i <= rating; i++){
+    const star = document.createElement('span');
+    star.classList.add('rating-star');
+    star.innerHTML = "&#x2605;";
+    ratingContainer.appendChild(star);
+  }
+
+  return ratingContainer;
 }
 
 /**

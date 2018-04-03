@@ -14,13 +14,14 @@
     </nav>
   </header>
 
-  <main class="maincontent">
+  <main class="main-content">
     <section class="map-container">
       <div class="map"></div>
     </section>
-    <section>
+    <section class="filters">
+      
       <div class="filter-options">
-        <h2>Filter Results</h2>
+        <h2>Filters</h2>
         <select class="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
           <option value="all">All Neighborhoods</option>
         </select>
@@ -28,13 +29,15 @@
           <option value="all">All Cuisines</option>
         </select>
       </div>
-      <ul class="restaurants-list"></ul>
+      </section>
+      <section>
+          <ul class="restaurants-list"></ul>
+      </section>
     </section>
   </main>
 
   <script src="js/dbhelper.js"></script>
   <script src="js/main.js"></script>
-  <script src="keys.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=+AIzaSyDyaTj4E_iLSzX-Jkpi4R6emGL2nBYUs9s+&libraries=places&callback=initMap"></script>
 
 
