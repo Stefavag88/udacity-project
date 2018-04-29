@@ -3,7 +3,6 @@ let restaurants,
   cuisines
 var map
 var markers = []
-
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -139,9 +138,8 @@ createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
   const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  li.append(image);
+  const responsiveImage = ImageHelper.createResponsiveImage(restaurant, image);
+  li.append(responsiveImage);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
@@ -157,6 +155,7 @@ createRestaurantHTML = (restaurant) => {
 
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
+  more.setAttribute('aria-label', `Navigate to ${restaurant.name} restaurant review`);
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 

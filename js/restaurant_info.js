@@ -57,9 +57,9 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.querySelector('.restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = document.querySelector('.restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  const image = ImageHelper.createResponsiveImage(restaurant, document.querySelector('.restaurant-img'));
+  // image.className = 'restaurant-img'
+  // image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -97,9 +97,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.querySelector('.reviews-container');
-  const title = document.createElement('h2');
-  title.innerHTML = 'REVIEWS';
-  container.appendChild(title);
 
   if (!reviews) {
     const noReviews = document.createElement('p');
@@ -120,7 +117,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.classList.add('review-container');
-
+  
   const reviewInfo = document.createElement('div');
   reviewInfo.classList.add('review-info');
 
@@ -128,6 +125,12 @@ createReviewHTML = (review) => {
   name.classList.add('review-name');
   name.innerHTML = review.name;
   reviewInfo.appendChild(name);
+
+  const date = document.createElement('span');
+  date.classList.add('review-date');
+  date.innerHTML = review.date;
+  date.setAttribute('aria-label', `Published on ${review.date}`);
+  reviewInfo.appendChild(date);
 
   const rating = createRatingStars(review);
   reviewInfo.appendChild(rating);
@@ -139,11 +142,6 @@ createReviewHTML = (review) => {
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
-  const date = document.createElement('span');
-  date.classList.add('review-date');
-  date.innerHTML = review.date;
-  li.appendChild(date);
-
   return li;
 }
 
@@ -153,11 +151,12 @@ createReviewHTML = (review) => {
 createRatingStars = ({rating}) => {
   const ratingContainer = document.createElement('div');
   ratingContainer.classList.add('review-rating');
-
+  ratingContainer.setAttribute('aria-label', `Rating : ${rating} stars out of 5`);
   for(let i = 1; i <= rating; i++){
     const star = document.createElement('span');
     star.classList.add('rating-star');
     star.innerHTML = "&#x2605;";
+    star.setAttribute('aria-hidden', 'true');
     ratingContainer.appendChild(star);
   }
 
