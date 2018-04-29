@@ -38,6 +38,17 @@
   <script src="js/dbhelper.js"></script>
   <script src="js/imageHelper.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+              console.log('Service Worker Registered');
+        });
+      navigator.serviceWorker.ready.then(function(registration) {
+         console.log('Service Worker Ready');
+      });
+    }
+  </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=+AIzaSyDyaTj4E_iLSzX-Jkpi4R6emGL2nBYUs9s+&libraries=places&callback=initMap"></script>
 
 
