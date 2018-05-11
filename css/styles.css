@@ -171,7 +171,7 @@ nav h1 a {
   font-family: Arial,sans-serif;
   text-align: left;
   margin:1em;
-  width:100%;
+  width:98%;
 }
 
 @media screen and (min-width: 671px){
@@ -179,7 +179,7 @@ nav h1 a {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
   }
 
@@ -193,7 +193,7 @@ nav h1 a {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
   }
 
@@ -279,14 +279,14 @@ nav h1 a {
   font-size:18pt;
 }
 
-@media screen and (min-width:800px){
+@media screen and (min-width:700px){
   .inside .map {
     background-color: #ccc;
-    max-width: 70%;
+    max-width: 65%;
   }
 
   .inside .restaurant-access-info{
-    max-width:30%;
+    max-width:35%;
   }
 }
 
@@ -301,12 +301,18 @@ nav h1 a {
   text-transform: uppercase;
   line-height: 1.1;
 }
+@media screen and (max-width:492px){
+  .restaurant-name{
+    font-size: 16pt;
+  }
+}
 .restaurant-img {
   width: 100%;
   object-fit: cover;
-  max-height:600px;
+  max-height:500px;
   overflow: hidden;
 }
+
 .restaurant-address {
   font-size: 16pt;
   margin-top:-0.5em;
