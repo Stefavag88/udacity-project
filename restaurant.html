@@ -18,7 +18,7 @@
       <h1><a href="/">Restaurant Reviews</a></h1>
     </nav>
     <!-- Beginning breadcrumb -->
-    <ul aria-hidden="true" class="breadcrumb" >
+    <ul role="navigation" aria-label="breadcrumb" class="breadcrumb" >
       <li><a href="/">Home</a></li>
     </ul>
     <!-- End breadcrumb -->
@@ -30,7 +30,7 @@
   <main class="main-content">
     <!-- Beginning restaurant -->
     <section class="restaurant-container">
-      <h1 class="restaurant-name"></h1>
+      <h2 class="restaurant-name"></h2>
       <img class="restaurant-img">
       <p class="restaurant-cuisine"></p>
       <section aria-label="access info" tabIndex="0" class="map-container">
@@ -40,7 +40,7 @@
             <h3>Open on </h3>
             <table class="restaurant-hours"></table>
         </div>
-        <div aria-role="presentation" aria-label="Location on google maps" tabIndex="-1" class="map"></div>
+        <div role="application" aria-label="Location on google maps" tabIndex="-1" class="map"></div>
       </section>
       
     </section>
