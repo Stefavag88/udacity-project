@@ -58,8 +58,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = ImageHelper.createResponsiveImage(restaurant, document.querySelector('.restaurant-img'));
-  // image.className = 'restaurant-img'
-  // image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;

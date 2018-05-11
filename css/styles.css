@@ -163,6 +163,7 @@ nav h1 a {
   align-content: center;
   max-width: 100%;
   text-align: center;
+  width:100%;
 }
 .restaurants-list li {
   background-color: #fff;
@@ -170,9 +171,38 @@ nav h1 a {
   font-family: Arial,sans-serif;
   text-align: left;
   margin:1em;
-  max-width:90%;
-  min-width:70%;
+  width:100%;
 }
+
+@media screen and (min-width: 671px){
+  .restaurants-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .restaurants-list li{
+    width: 300px;
+  }
+}
+
+@media screen and (min-width: 871px) and (max-width:996px){
+  .restaurants-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .restaurants-list li{
+    width: 400px;
+  }
+}
+
+
 .restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
@@ -223,12 +253,13 @@ nav h1 a {
   width: 100%;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: stretch;
 }
 .inside .map {
   background-color: #ccc;
   height: 100%;
   width: 100%;
-  height:280px;
+  align-self: stretch;
 }
 .inside .restaurant-access-info{
   min-width:200px;
