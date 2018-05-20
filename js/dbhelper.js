@@ -28,9 +28,9 @@ class DBHelper {
         return;
       }
 
-      response.json().then(data => {
-        callback(null, data);
-      })
+      response.json()
+        .then(data => {callback(null, data)})
+        .catch(err => {callback(err, null)})
     });
   }
 
@@ -39,17 +39,16 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
+    fetch(`${DBHelper.API_URL}/${id}`).then(response => {
+    if(!response.ok){
+        const error = response.statusText;
         callback(error, null);
         return;
-      } 
-      const restaurant = restaurants.find(r => r.id == id);
-      if (restaurant) { // Got the restaurant
-        callback(null, restaurant);
-      } else { // Restaurant does not exist in the database
-        callback('Restaurant does not exist', null);
-      }  
+      }
+
+      response.json()
+        .then(data => {callback(null, data)})
+        .catch(err => {callback(err, null)})
     });
   }
 
