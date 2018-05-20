@@ -1,6 +1,6 @@
 import {fetchCuisines as getCuisines, 
         fetchNeighborhoods as getNeighborhoods, 
-        fetchRestaurantByCuisineAndNeighborhood as getCuisineAndNeighbourhood,
+        fetchRestaurantByCuisineAndNeighborhood as getByCuisineAndNeighbourhood,
         urlForRestaurant as restaurantUrl,
         mapMarkerForRestaurant as restaurentMarker} from "./dbhelper";
 import {createResponsiveImage}  from "./imageHelper";
@@ -37,6 +37,7 @@ const fetchNeighborhoods = () => {
  */
 const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.querySelector('.neighborhoods-select');
+  select.addEventListener('change', updateRestaurants);
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
     option.innerHTML = neighborhood;
@@ -64,7 +65,7 @@ const fetchCuisines = () => {
  */
 const fillCuisinesHTML = (cuisines = self.cuisines) => {
   const select = document.querySelector('.cuisines-select');
-
+  select.addEventListener('change', updateRestaurants);
   cuisines.forEach(cuisine => {
     const option = document.createElement('option');
     option.innerHTML = cuisine;
@@ -102,7 +103,7 @@ const updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  getCuisineAndNeighbourhood(cuisine, neighborhood, (error, restaurants) => {
+  getByCuisineAndNeighbourhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!
       console.error(error);
       return;
@@ -123,7 +124,7 @@ const resetRestaurants = (restaurants) => {
 
   // Remove all map markers
   if(self.markers){
-	self.markers.forEach(m => m.setMap(null));
+	  self.markers.forEach(m => m.setMap(null));
   }
   self.markers = [];
   self.restaurants = restaurants;

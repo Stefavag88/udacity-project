@@ -1,9 +1,4 @@
-/**
- * Database URL.
- * Change this to restaurants.json file location on your server.
- */
 const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
-
 const API_URL = `http://localhost:1337/restaurants`;
 
 /**
@@ -147,7 +142,7 @@ export const mapMarkerForRestaurant = (restaurant, map) => {
   const marker = new google.maps.Marker({
     position: restaurant.latlng,
     title: restaurant.name,
-    url: DBHelper.urlForRestaurant(restaurant),
+    url: urlForRestaurant(restaurant),
     map: map,
     animation: google.maps.Animation.DROP
   }
