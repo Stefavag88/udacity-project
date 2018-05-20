@@ -1,6 +1,5 @@
 const env = process.env.NODE_ENV;
 
-
 const config = {
     entry: {
         home: './src/main.js',
