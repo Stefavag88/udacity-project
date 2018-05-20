@@ -1,0 +1,33 @@
+{
+  "name": "mws-restaurant-info",
+  "version": "1.0.0",
+  "description": "Udacity Project with babel and webpack",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --config webpack.config.js && webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Stefavag88/udacity-project.git"
+  },
+  "keywords": [
+    "webpack",
+    "babel",
+    "npm"
+  ],
+  "author": "Vaggelis Stefanakis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Stefavag88/udacity-project/issues"
+  },
+  "homepage": "https://github.com/Stefavag88/udacity-project#readme",
+  "dependencies": {
+    "npm-scripts": "^1.4.0",
+    "webpack": "^4.8.3"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.1.3",
+    "webpack-dev-server": "^3.1.4"
+  }
+}
