@@ -1,4 +1,7 @@
 const env = process.env.NODE_ENV;
+const path = require('path');
+
+
 
 const config = {
     entry: {
@@ -7,9 +10,13 @@ const config = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: __dirname + '/dist'
+        path: path.resolve(__dirname, 'dist')
     },
     mode: env || 'development',
+    devtool: 'inline-source-map',
+    devServer: {
+        compress: true
+    },
     module: {
         rules: [
             {
@@ -17,18 +24,18 @@ const config = {
                 use: [
                     'style-loader',
                     'css-loader'
-               ]
+                ]
             },
             {
                 test: /\.js$/,
                 exclude: /(node_modules)/,
                 use: {
-                  loader: 'babel-loader',
-                  options: {
-                    "presets": ["env"]  
-                  }
+                    loader: 'babel-loader',
+                    options: {
+                        "presets": ["env"]
+                    }
                 }
-              }
+            }
         ]
     }
 };
