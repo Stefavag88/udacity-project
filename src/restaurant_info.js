@@ -1,5 +1,5 @@
-import { DBHelper } from "./dbhelper";
-import { ImageHelper } from "./imageHelper";
+import {fetchRestaurantById, mapMarkerForRestaurant} from "./dbhelper.js"
+import {createResponsiveImage}  from "./imageHelper";
 
 let restaurant;
 var map;
@@ -18,14 +18,14 @@ window.initMap = () => {
       scrollwheel: false
     });
     fillBreadcrumb();
-    DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+    mapMarkerForRestaurant(self.restaurant, self.map);
   });
 }
 
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromURL = (callback) => {
+const fetchRestaurantFromURL = (callback) => {
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant)
     return;
@@ -38,7 +38,7 @@ fetchRestaurantFromURL = (callback) => {
     return;
   }
 
-  DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+  fetchRestaurantById(id, (error, restaurant) => {
     self.restaurant = restaurant;
     if (!restaurant) {
       console.error(error);
@@ -52,14 +52,14 @@ fetchRestaurantFromURL = (callback) => {
 /**
  * Create restaurant HTML and add it to the webpage
  */
-fillRestaurantHTML = (restaurant = self.restaurant) => {
+const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.querySelector('.restaurant-name');
   name.innerHTML = restaurant.name;
 
   const address = document.querySelector('.restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = ImageHelper.createResponsiveImage(restaurant, document.querySelector('.restaurant-img'));
+  const image = createResponsiveImage(restaurant, document.querySelector('.restaurant-img'));
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -75,7 +75,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
+const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.querySelector('.restaurant-hours');
   for (let key in operatingHours) {
     const row = document.createElement('tr');
@@ -95,7 +95,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.querySelector('.reviews-container');
 
   if (!reviews) {
@@ -114,7 +114,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHTML = (review) => {
+const createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.classList.add('review-container');
   
@@ -148,7 +148,7 @@ createReviewHTML = (review) => {
 /**
  * Create rating stars to display to the review
  */
-createRatingStars = ({rating}) => {
+const createRatingStars = ({rating}) => {
   const ratingContainer = document.createElement('div');
   ratingContainer.classList.add('review-rating');
   ratingContainer.setAttribute('aria-label', `Rating : ${rating} stars out of 5`);
@@ -166,7 +166,7 @@ createRatingStars = ({rating}) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+const fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.querySelector('.breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -176,7 +176,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
 /**
  * Get a parameter by name from page URL.
  */
-getParameterByName = (name, url) => {
+const getParameterByName = (name, url) => {
   if (!url)
     url = window.location.href;
 

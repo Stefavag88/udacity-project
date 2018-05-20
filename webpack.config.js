@@ -1,4 +1,3 @@
-const path = require("path");
 const env = process.env.NODE_ENV;
 
 
@@ -8,10 +7,31 @@ const config = {
         restaurantInfo: './src/restaurant_info.js'
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].bundle.js',
         path: __dirname + '/dist'
-    }, 
-    mode: env || 'development'
+    },
+    mode: env || 'development',
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+               ]
+            },
+            {
+                test: /\.js$/,
+                exclude: /(node_modules)/,
+                use: {
+                  loader: 'babel-loader',
+                  options: {
+                    "presets": ["env"]  
+                  }
+                }
+              }
+        ]
+    }
 };
 
 module.exports = config;
