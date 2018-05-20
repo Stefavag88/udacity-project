@@ -164,7 +164,7 @@ const createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
   const image = document.createElement('img');
-  const responsiveImage = createResponsiveImage(restaurant, image);
+  const responsiveImage = createResponsiveImage(restaurant, image, 'home');
   li.append(responsiveImage);
 
   const name = document.createElement('h1');

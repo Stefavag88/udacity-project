@@ -59,7 +59,7 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.querySelector('.restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = createResponsiveImage(restaurant, document.querySelector('.restaurant-img'));
+  const image = createResponsiveImage(restaurant, document.querySelector('.restaurant-img'), 'info');
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
