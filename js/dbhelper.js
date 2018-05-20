@@ -12,23 +12,26 @@ class DBHelper {
     return `http://localhost:${port}/data/restaurants.json`;
   }
 
+  static get API_URL(){
+    const port = 1337
+    return `http://localhost:${port}/restaurants`;
+  }
+
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
+    fetch(DBHelper.API_URL).then(response => {
+      if(!response.ok){
+        const error = response.statusText;
         callback(error, null);
+        return;
       }
-    };
-    xhr.send();
+
+      response.json().then(data => {
+        callback(null, data);
+      })
+    });
   }
 
   /**
