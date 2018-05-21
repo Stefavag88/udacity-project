@@ -4,6 +4,7 @@ import {fetchCuisines as getCuisines,
         urlForRestaurant as restaurantUrl,
         mapMarkerForRestaurant as restaurentMarker} from "./dbhelper";
 import {createResponsiveImage}  from "./imageHelper";
+import "../css/styles.css"
 
 let restaurants,
   neighborhoods,

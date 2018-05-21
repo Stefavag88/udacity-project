@@ -8,9 +8,10 @@
           `/`,
           `/index.html`,
           `/restaurant.html`,
-          `/src/restaurant_info.js`,
-          `/css/styles.css`,
-          `/src/main.js`
+          `/dist/restaurantInfo.bundle.js`,
+          `/dist/home.css`,
+          `/dist/restaurantInfo.css`,
+          `/dist/home.bundle.js`
         ])
           .then(() => self.skipWaiting());
       })

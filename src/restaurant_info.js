@@ -1,5 +1,6 @@
 import {fetchRestaurantById, mapMarkerForRestaurant} from "./dbhelper.js"
 import {createResponsiveImage}  from "./imageHelper";
+import "../css/styles_info.css";
 
 let restaurant;
 var map;
