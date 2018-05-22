@@ -7,15 +7,17 @@ export const createResponsiveImage = (restaurant, imgElement, page) => {
 
     if (page === 'info') {
 
-        imgElement.srcset = `${imgPath}-360w.jpg 360w,
+        imgElement.dataset.srcset = `${imgPath}-360w.jpg 360w,
                                  ${imgPath}-496w.jpg 496w,
                                  ${imgPath}-800w.jpg 800w`;
         imgElement.sizes = "(max-width: 400px) 360px,(max-width: 600px) 496px,800px";
 
     }
 
-    imgElement.className = 'restaurant-img';
-    imgElement.src = `${imgPath}-${size}.jpg`
+    imgElement.classList.add('restaurant-img');
+    imgElement.classList.add('lazy');
+    imgElement.src = `${imgPath}-mock.jpg`;
+    imgElement.dataset.src = `${imgPath}-${size}.jpg`;
     imgElement.alt = `Photo of ${restaurant.name} restaurant`;
 
     return imgElement;

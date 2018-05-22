@@ -1,9 +1,11 @@
-import {fetchCuisines as getCuisines, 
-        fetchNeighborhoods as getNeighborhoods, 
-        fetchRestaurantByCuisineAndNeighborhood as getByCuisineAndNeighbourhood,
-        urlForRestaurant as restaurantUrl,
-        mapMarkerForRestaurant as restaurentMarker} from "./dbhelper";
-import {createResponsiveImage}  from "./imageHelper";
+import {
+  fetchCuisines as getCuisines,
+  fetchNeighborhoods as getNeighborhoods,
+  fetchRestaurantByCuisineAndNeighborhood as getByCuisineAndNeighbourhood,
+  urlForRestaurant as restaurantUrl,
+  mapMarkerForRestaurant as restaurentMarker
+} from "./dbhelper";
+import { createResponsiveImage } from "./imageHelper";
 import "../css/styles.css"
 
 let restaurants,
@@ -19,6 +21,44 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
 });
+
+const lazyLoadImages = (setSrcSet) => {
+  let lazyImages = [].slice.call(document.querySelectorAll(".lazy"));
+  let active = false;
+
+  const lazyLoad = function() {
+    if (active === false) {
+      active = true;
+
+      setTimeout(function() {
+        lazyImages.forEach(function(lazyImage) {
+          if ((lazyImage.getBoundingClientRect().top <= window.innerHeight && lazyImage.getBoundingClientRect().bottom >= 0) && getComputedStyle(lazyImage).display !== "none") {
+            lazyImage.src = lazyImage.dataset.src;
+            if(setSrcSet)
+              lazyImage.srcset = lazyImage.dataset.srcset;
+            lazyImage.classList.remove("lazy");
+
+            lazyImages = lazyImages.filter(function(image) {
+              return image !== lazyImage;
+            });
+
+            if (lazyImages.length === 0) {
+              document.removeEventListener("scroll", lazyLoad);
+              window.removeEventListener("resize", lazyLoad);
+              window.removeEventListener("orientationchange", lazyLoad);
+            }
+          }
+        });
+
+        active = false;
+      }, 200);
+    }
+  };
+
+  document.addEventListener("scroll", lazyLoad);
+  window.addEventListener("resize", lazyLoad);
+  window.addEventListener("orientationchange", lazyLoad);
+}
 
 /**
  * Register service Worker
@@ -124,9 +164,9 @@ const updateRestaurants = () => {
     if (error) { // Got an error!
       console.error(error);
       return;
-	}
-	resetRestaurants(restaurants);
-	fillRestaurantsHTML();
+    }
+    resetRestaurants(restaurants);
+    fillRestaurantsHTML();
   })
 }
 
@@ -140,8 +180,8 @@ const resetRestaurants = (restaurants) => {
   ul.innerHTML = '';
 
   // Remove all map markers
-  if(self.markers){
-	  self.markers.forEach(m => m.setMap(null));
+  if (self.markers) {
+    self.markers.forEach(m => m.setMap(null));
   }
   self.markers = [];
   self.restaurants = restaurants;
@@ -155,6 +195,7 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
+  lazyLoadImages(false);
   addMarkersToMap();
 }
 
