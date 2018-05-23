@@ -1,5 +1,5 @@
-import {fetchRestaurantById, mapMarkerForRestaurant} from "./dbhelper.js"
-import {createResponsiveImage}  from "./imageHelper";
+import { fetchRestaurantById, mapMarkerForRestaurant } from "./dbhelper.js"
+import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 
 let restaurant;
@@ -12,7 +12,7 @@ window.initMap = () => {
     if (error) { // Got an error!
       console.error(error);
       return;
-    } 
+    }
     self.map = new google.maps.Map(document.querySelector('.map'), {
       zoom: 16,
       center: restaurant.latlng,
@@ -65,11 +65,11 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
-  // fill operating hours
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
+
+  lazyLoadImages([image], true);
   fillReviewsHTML();
 }
 
@@ -118,7 +118,7 @@ const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 const createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.classList.add('review-container');
-  
+
   const reviewInfo = document.createElement('div');
   reviewInfo.classList.add('review-info');
 
@@ -149,11 +149,11 @@ const createReviewHTML = (review) => {
 /**
  * Create rating stars to display to the review
  */
-const createRatingStars = ({rating}) => {
+const createRatingStars = ({ rating }) => {
   const ratingContainer = document.createElement('div');
   ratingContainer.classList.add('review-rating');
   ratingContainer.setAttribute('aria-label', `Rating : ${rating} stars out of 5`);
-  for(let i = 1; i <= rating; i++){
+  for (let i = 1; i <= rating; i++) {
     const star = document.createElement('span');
     star.classList.add('rating-star');
     star.innerHTML = "&#x2605;";
@@ -167,7 +167,7 @@ const createRatingStars = ({rating}) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-const fillBreadcrumb = (restaurant=self.restaurant) => {
+const fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.querySelector('.breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -183,13 +183,13 @@ const getParameterByName = (name, url) => {
 
   name = name.replace(/[\[\]]/g, '\\$&');
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
-        results = regex.exec(url);
+    results = regex.exec(url);
 
   if (!results)
     return null;
 
   if (!results[2])
     return '';
-    
+
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
