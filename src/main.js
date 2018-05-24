@@ -6,7 +6,7 @@ import {
   mapMarkerForRestaurant as restaurentMarker
 } from "./dbhelper";
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
-import "../css/styles.css"
+import "../css/styles.css";
 
 let restaurants,
   neighborhoods,

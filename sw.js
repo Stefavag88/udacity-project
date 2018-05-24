@@ -1,4 +1,4 @@
-   const version = "0.1.2";
+  const version = "0.1.2";
   const cacheName = `reviews-${version}`;
   self.addEventListener('install', e => {
     const timeStamp = Date.now();
@@ -8,10 +8,10 @@
           `/`,
           `/index.html`,
           `/restaurant.html`,
-          `/dist/restaurantInfo.bundle.js`,
+          `/dist/restaurantInfo.js`,
           `/dist/home.css`,
           `/dist/restaurantInfo.css`,
-          `/dist/home.bundle.js`
+          `/dist/home.js`
         ])
           .then(() => self.skipWaiting());
       })

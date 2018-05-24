@@ -3,7 +3,6 @@ const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const CssNano = require("cssnano");
 
 function recursiveIssuer(m) {
     if (m.issuer) {
@@ -17,8 +16,8 @@ function recursiveIssuer(m) {
 
 const config = {
     entry: {
-        'home': path.resolve(__dirname, 'src/main'),
-        'restaurantInfo': path.resolve(__dirname, 'src/restaurant_info')
+        'home': ['babel-polyfill', path.resolve(__dirname, 'src/main')],
+        'restaurantInfo':['babel-polyfill', path.resolve(__dirname, 'src/restaurant_info')]
     },
     output: {
         filename: '[name].js',
@@ -50,7 +49,7 @@ const config = {
             }
         }
     },
-    mode: env || 'development',
+    mode: 'development',
     devtool: 'source-map',
     devServer: {
         compress: true
@@ -66,8 +65,10 @@ const config = {
             {
                 test: /\.css$/,
                 use: [
+                    "style-loader",
                     MiniCssExtractPlugin.loader,
-                    "css-loader"
+                    "css-loader",
+                    "postcss-loader"
                 ]
             },
             {
@@ -76,7 +77,7 @@ const config = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        "presets": ["env"]
+                        "presets": ["es2015","env"]
                     }
                 }
             }

@@ -123,12 +123,13 @@ nav h1 a {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: stretch;
-  }
+}
   .inside .map {
     background-color: #ccc;
     height: 100%;
     width: 100%;
     align-self: stretch;
+    margin-bottom:0.3em;
   }
   .inside .restaurant-access-info{
     min-width:200px;

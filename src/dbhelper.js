@@ -4,7 +4,7 @@ const API_URL = `http://localhost:1337/restaurants`;
 /**
  * Fetch all restaurants.
  */
-export const fetchRestaurants = (callback) => {
+export function fetchRestaurants(callback){
   fetch(API_URL).then(response => {
     if (!response.ok) {
       const error = response.statusText;
@@ -71,9 +71,9 @@ export const fetchRestaurantByNeighborhood = (neighborhood, callback) => {
 /**
  * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
  */
-export const fetchRestaurantByCuisineAndNeighborhood = (cuisine, neighborhood, callback) => {
+export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback){
   // Fetch all restaurants
-  fetchRestaurants((error, restaurants) => {
+   fetchRestaurants((error, restaurants) => {
     if (error) {
       callback(error, null);
     } else {
@@ -92,9 +92,9 @@ export const fetchRestaurantByCuisineAndNeighborhood = (cuisine, neighborhood, c
 /**
  * Fetch all neighborhoods with proper error handling.
  */
-export const fetchNeighborhoods = (callback) => {
+export function fetchNeighborhoods(callback){
   // Fetch all restaurants
-  fetchRestaurants((error, restaurants) => {
+   fetchRestaurants((error, restaurants) => {
     if (error) {
       callback(error, null);
     } else {
