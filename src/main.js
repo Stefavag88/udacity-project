@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
+  updateRestaurants();
+  setTimeout(() => {
+    let mapDiv = document.querySelector('.hidden');
+    window.initMap();
+    mapDiv.classList.remove('hidden');
+  }, 200)
 });
 
 
@@ -108,7 +114,7 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  updateRestaurants();
+  addMarkersToMap();
 }
 
 /**
@@ -162,7 +168,6 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
 
   const lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
   lazyLoadImages(lazyImages, false);
-  addMarkersToMap();
 }
 
 /**

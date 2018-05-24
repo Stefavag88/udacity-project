@@ -4,23 +4,53 @@ import "../css/styles_info.css";
 
 let restaurant;
 var map;
-/**
- * Initialize Google map, called from HTML.
- */
-window.initMap = () => {
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
       return;
     }
-    self.map = new google.maps.Map(document.querySelector('.map'), {
-      zoom: 16,
-      center: restaurant.latlng,
-      scrollwheel: false
-    });
-    fillBreadcrumb();
-    mapMarkerForRestaurant(self.restaurant, self.map);
+
+    let mapDiv = document.querySelector('.hidden');
+    // if ("IntersectionObserver" in window) {
+    //   let mapObserver;
+    //   const options = {
+    //     root: null,
+    //     rootMargin: '0px',
+    //     threshold: 0.7
+    //   }
+    //   mapObserver = new IntersectionObserver(function(){showMapOnScreen(mapDiv, this)}, options);
+
+    //   observer.observe(mapDiv);
+    // } else {
+      setTimeout(() => {
+        showMapOnScreen(mapDiv);
+      }, 1000)
+    //}
   });
+});
+
+const showMapOnScreen = (mapDiv, observer = null) => {
+  window.initMap();
+  mapDiv.classList.remove('hidden');
+  if(observer)
+    observer.unobserve(mapDiv);
+};
+
+
+/**
+ * Initialize Google map, called from HTML.
+ */
+window.initMap = () => {
+
+  self.map = new google.maps.Map(document.querySelector('.map'), {
+    zoom: 16,
+    center: self.restaurant.latlng,
+    scrollwheel: false
+  });
+  mapMarkerForRestaurant(self.restaurant, self.map);
 }
 
 /**
@@ -45,6 +75,7 @@ const fetchRestaurantFromURL = (callback) => {
       console.error(error);
       return;
     }
+    fillBreadcrumb();
     fillRestaurantHTML();
     callback(null, restaurant)
   });
@@ -57,19 +88,18 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.querySelector('.restaurant-name');
   name.innerHTML = restaurant.name;
 
-  const address = document.querySelector('.restaurant-address');
-  address.innerHTML = restaurant.address;
-
   const image = createResponsiveImage(restaurant, document.querySelector('.restaurant-img'), 'info');
+  lazyLoadImages([image], true);
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
-  if (restaurant.operating_hours) {
-    fillRestaurantHoursHTML();
-  }
+  const address = document.querySelector('.restaurant-address');
+  address.innerHTML = restaurant.address;
 
-  lazyLoadImages([image], true);
+  if (restaurant.operating_hours)
+    fillRestaurantHoursHTML();
+
   fillReviewsHTML();
 }
 

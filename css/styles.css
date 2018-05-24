@@ -112,6 +112,10 @@ nav h1 a {
     text-decoration: underline;
 }
 
+.map-container{
+  display: block;
+  transition: all 0.4s linear;
+}
 .map {
   min-height: 55vh;
   width: 100%;
@@ -243,4 +247,12 @@ nav h1 a {
 .restaurants-list li a:hover{
   box-shadow: 0 0.1em 0.2em #ccc; 
   background-color: #f18200;
+}
+
+.hidden{
+  display: none;
+}
+
+.block{
+  display: block;
 }
