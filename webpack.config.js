@@ -49,7 +49,7 @@ const config = {
             }
         }
     },
-    mode: 'development',
+    mode: 'production',
     devtool: 'source-map',
     devServer: {
         compress: true
