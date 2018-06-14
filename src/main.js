@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let mapDiv = document.querySelector('.hidden');
     window.initMap();
     mapDiv.classList.remove('hidden');
-  }, 200)
+  }, 500)
 });
 
 

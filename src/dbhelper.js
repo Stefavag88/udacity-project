@@ -7,33 +7,57 @@ const API_URL = `http://localhost:1337/restaurants`;
  */
 export function fetchRestaurants(callback) {
 
-  fetch(API_URL).then(response => {
-    if (!response.ok) {
-      const error = response.statusText;
-      callback(error, null);
-      return;
-    }
+  const dbPromise = idb.open('restaurants', 1, upgradeDB => {
+    upgradeDB.createObjectStore('stores', { keyPath: 'id' });
 
-    const dbPromise = idb.open('restaurants', 1, upgradeDB => {
-      upgradeDB.createObjectStore('stores', { keyPath: 'id' });
-    })
+    fetch(API_URL).then(response => {
+      if (!response.ok) {
+        const error = response.statusText;
+        callback(error, null);
+        return;
+      }
 
-    const responeClone = response.clone();
-
-    dbPromise.then(db => {
-      const tx = db.transaction('stores', 'readwrite');
+      const responeClone = response.clone();
+      saveDataToIDB(dbPromise, responeClone);
       
-      responeClone.json().then(restaurants => {
+      response.json()
+        .then(data => { callback(null, data) })
+        .catch(err => { callback(err, null) })
+    });
+  });
+
+  dbPromise.then(db => {
+    const dbExists = db.objectStoreNames.contains("stores");
+
+    if (!dbExists) return;
+
+    const tx = db.transaction("stores", "readonly");
+    tx.objectStore("stores")
+      .getAll()
+      .then(data => {
+        callback(null, data);
+        return tx.complete;
+      })
+      .catch(err => {
+        callback(err, null);
+        return tx.abort;
+      })
+  })
+}
+
+function saveDataToIDB(dbPromise, response){
+  dbPromise.then(db => {
+    const tx = db.transaction('stores', 'readwrite');
+
+    response
+      .json()
+      .then(restaurants => {
         restaurants.forEach(r => {
           tx.objectStore('stores').put(r);
         })
         return tx.complete;
       })
-    })
-    response.json()
-      .then(data => { callback(null, data)})
-      .catch(err => { callback(err, null) })
-  });
+  })
 }
 
 /**
