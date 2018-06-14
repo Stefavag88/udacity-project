@@ -1,10 +1,12 @@
-const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
-const API_URL = `http://localhost:1337/restaurants`;
+import idb from 'idb';
 
+//const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
+const API_URL = `http://localhost:1337/restaurants`;
 /**
  * Fetch all restaurants.
  */
-export function fetchRestaurants(callback){
+export function fetchRestaurants(callback) {
+
   fetch(API_URL).then(response => {
     if (!response.ok) {
       const error = response.statusText;
@@ -12,8 +14,24 @@ export function fetchRestaurants(callback){
       return;
     }
 
+    const dbPromise = idb.open('restaurants', 1, upgradeDB => {
+      upgradeDB.createObjectStore('stores', { keyPath: 'id' });
+    })
+
+    const responeClone = response.clone();
+
+    dbPromise.then(db => {
+      const tx = db.transaction('stores', 'readwrite');
+      
+      responeClone.json().then(restaurants => {
+        restaurants.forEach(r => {
+          tx.objectStore('stores').put(r);
+        })
+        return tx.complete;
+      })
+    })
     response.json()
-      .then(data => { callback(null, data) })
+      .then(data => { callback(null, data)})
       .catch(err => { callback(err, null) })
   });
 }
@@ -71,9 +89,9 @@ export const fetchRestaurantByNeighborhood = (neighborhood, callback) => {
 /**
  * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
  */
-export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback){
+export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
   // Fetch all restaurants
-   fetchRestaurants((error, restaurants) => {
+  fetchRestaurants((error, restaurants) => {
     if (error) {
       callback(error, null);
     } else {
@@ -92,9 +110,9 @@ export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, c
 /**
  * Fetch all neighborhoods with proper error handling.
  */
-export function fetchNeighborhoods(callback){
+export function fetchNeighborhoods(callback) {
   // Fetch all restaurants
-   fetchRestaurants((error, restaurants) => {
+  fetchRestaurants((error, restaurants) => {
     if (error) {
       callback(error, null);
     } else {
@@ -150,13 +168,15 @@ export const mapMarkerForRestaurant = (restaurant, map) => {
   return marker;
 }
 
-export default {fetchCuisines,
-                fetchNeighborhoods, 
-                fetchRestaurantByCuisine, 
-                fetchRestaurantByCuisineAndNeighborhood, 
-                fetchRestaurantById, 
-                fetchRestaurantByNeighborhood, 
-                fetchRestaurants, 
-                mapMarkerForRestaurant,
-                imageUrlForRestaurant,
-                urlForRestaurant};
+export default {
+  fetchCuisines,
+  fetchNeighborhoods,
+  fetchRestaurantByCuisine,
+  fetchRestaurantByCuisineAndNeighborhood,
+  fetchRestaurantById,
+  fetchRestaurantByNeighborhood,
+  fetchRestaurants,
+  mapMarkerForRestaurant,
+  imageUrlForRestaurant,
+  urlForRestaurant
+};

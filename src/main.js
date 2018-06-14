@@ -105,6 +105,8 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
+
+  console.log("At initMap!!");
   let loc = {
     lat: 40.722216,
     lng: -73.987501
