@@ -17,18 +17,21 @@ var markers = []
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+
+  document.addEventListener('dataFetch', showMapOnScreen,{once:true});
+
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
   updateRestaurants();
-  setTimeout(() => {
-    let mapDiv = document.querySelector('.hidden');
-    window.initMap();
-    mapDiv.classList.remove('hidden');
-  }, 500)
 });
 
 
+function showMapOnScreen(){
+  let mapDiv = document.querySelector('.hidden');
+    window.initMap();
+    mapDiv.classList.remove('hidden');
+}
 
 /**
  * Register service Worker
@@ -106,7 +109,6 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  */
 window.initMap = () => {
 
-  console.log("At initMap!!");
   let loc = {
     lat: 40.722216,
     lng: -73.987501

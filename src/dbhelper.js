@@ -2,28 +2,16 @@ import idb from 'idb';
 
 //const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
 const API_URL = `http://localhost:1337/restaurants`;
+const IDB_VERSION = 1;
 /**
  * Fetch all restaurants.
  */
 export function fetchRestaurants(callback) {
 
-  const dbPromise = idb.open('restaurants', 1, upgradeDB => {
+  const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
     upgradeDB.createObjectStore('stores', { keyPath: 'id' });
 
-    fetch(API_URL).then(response => {
-      if (!response.ok) {
-        const error = response.statusText;
-        callback(error, null);
-        return;
-      }
-
-      const responeClone = response.clone();
-      saveDataToIDB(dbPromise, responeClone);
-      
-      response.json()
-        .then(data => { callback(null, data) })
-        .catch(err => { callback(err, null) })
-    });
+    fetchDataAndSaveToIDB(dbPromise);
   });
 
   dbPromise.then(db => {
@@ -45,17 +33,41 @@ export function fetchRestaurants(callback) {
   })
 }
 
-function saveDataToIDB(dbPromise, response){
+function fetchDataAndSaveToIDB(dbPromise){
+  fetch(API_URL).then(response => {
+    if (!response.ok) {
+      const error = response.statusText;
+      callback(error, null);
+      return;
+    }
+
+    const responeClone = response.clone();
+    saveDataToIDB(dbPromise, responeClone);
+
+    response.json()
+      .then(data => { callback(null, data) })
+      .catch(err => { callback(err, null) })
+  });
+}
+
+function saveDataToIDB(dbPromise, response) {
   dbPromise.then(db => {
     const tx = db.transaction('stores', 'readwrite');
-
     response
       .json()
       .then(restaurants => {
-        restaurants.forEach(r => {
-          tx.objectStore('stores').put(r);
-        })
+
+        if (Array.isArray(restaurants)) {
+          restaurants.forEach(r => {
+            tx.objectStore('stores').put(r);
+          })
+        } else {
+          tx.objectStore("stores").put(restaurants);
+        }
         return tx.complete;
+      })
+      .catch(err => {
+        console.log(`Could not save restaurant/s to idb...`, err);
       })
   })
 }
@@ -65,16 +77,49 @@ function saveDataToIDB(dbPromise, response){
  */
 export const fetchRestaurantById = (id, callback) => {
   // fetch all restaurants with proper error handling.
-  fetch(`${API_URL}/${id}`).then(response => {
-    if (!response.ok) {
-      const error = response.statusText;
-      callback(error, null);
-      return;
-    }
+  let dataFetched = false;
+  const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
 
-    response.json()
-      .then(data => { callback(null, data) })
-      .catch(err => { callback(err, null) })
+    const storeExists = upgradeDB.objectStoreNames.contains("stores");
+
+    if (!storeExists)
+      upgradeDB.createObjectStore('stores', { keyPath: 'id' });
+
+    fetch(`${API_URL}/${id}`).then(response => {
+      if (!response.ok) {
+        const error = response.statusText;
+        callback(error, null);
+        return;
+      }
+      const responeClone = response.clone();
+
+      saveDataToIDB(dbPromise, responeClone);
+
+      response.json()
+        .then(data => {
+          dataFetched = true;
+          callback(null, data)
+        })
+        .catch(err => { callback(err, null) })
+    });
+  });
+
+  dbPromise.then(db => {
+    const dbExists = db.objectStoreNames.contains("stores");
+    if (!dbExists || dataFetched) return;
+
+    const tx = db.transaction("stores");
+
+    tx.objectStore("stores")
+      .getAll()
+      .then(data => {
+        callback(null, data[0]);
+        return tx.complete;
+      })
+      .catch(err => {
+        callback(err, null);
+        return tx.abort;
+      });
   });
 }
 
@@ -119,7 +164,11 @@ export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, c
     if (error) {
       callback(error, null);
     } else {
-      let results = restaurants
+      let results = restaurants;
+      
+      const dataFetchedEvent = new CustomEvent('dataFetch');
+      document.dispatchEvent(dataFetchedEvent);
+
       if (cuisine != 'all') { // filter by cuisine
         results = results.filter(r => r.cuisine_type == cuisine);
       }

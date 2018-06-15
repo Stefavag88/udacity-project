@@ -3,40 +3,25 @@ import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 
 let restaurant;
-var map;
-
+let map;
 
 document.addEventListener('DOMContentLoaded', (event) => {
+
+  document.addEventListener('dataFetch', showMapOnScreen,{once:true});
+
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
       return;
     }
-
-    let mapDiv = document.querySelector('.hidden');
-    // if ("IntersectionObserver" in window) {
-    //   let mapObserver;
-    //   const options = {
-    //     root: null,
-    //     rootMargin: '0px',
-    //     threshold: 0.7
-    //   }
-    //   mapObserver = new IntersectionObserver(function(){showMapOnScreen(mapDiv, this)}, options);
-
-    //   observer.observe(mapDiv);
-    // } else {
-      setTimeout(() => {
-        showMapOnScreen(mapDiv);
-      }, 1000)
-    //}
   });
 });
 
-const showMapOnScreen = (mapDiv, observer = null) => {
+
+const showMapOnScreen = () => {
+  let mapDiv = document.querySelector('.hidden');
   window.initMap();
   mapDiv.classList.remove('hidden');
-  if(observer)
-    observer.unobserve(mapDiv);
 };
 
 
@@ -57,24 +42,31 @@ window.initMap = () => {
  * Get current restaurant from page URL.
  */
 const fetchRestaurantFromURL = (callback) => {
-  if (self.restaurant) { // restaurant already fetched!
+  
+  if (self.restaurant) { 
     callback(null, self.restaurant)
     return;
   }
 
   const id = getParameterByName('id');
-  if (!id) { // no id found in URL
+  if (!id) { 
     error = 'No restaurant id in URL'
     callback(error, null);
     return;
   }
 
   fetchRestaurantById(id, (error, restaurant) => {
-    self.restaurant = restaurant;
-    if (!restaurant) {
-      console.error(error);
+    
+    if (error)
+      callback(error, null);
+
+    if (!restaurant)
       return;
-    }
+    
+    self.restaurant = restaurant;
+    const dataFetchedEvent = new CustomEvent('dataFetch');
+    document.dispatchEvent(dataFetchedEvent);
+    
     fillBreadcrumb();
     fillRestaurantHTML();
     callback(null, restaurant)
@@ -183,6 +175,7 @@ const createRatingStars = ({ rating }) => {
   const ratingContainer = document.createElement('div');
   ratingContainer.classList.add('review-rating');
   ratingContainer.setAttribute('aria-label', `Rating : ${rating} stars out of 5`);
+
   for (let i = 1; i <= rating; i++) {
     const star = document.createElement('span');
     star.classList.add('rating-star');
