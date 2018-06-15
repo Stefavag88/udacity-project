@@ -165,9 +165,6 @@ export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, c
       callback(error, null);
     } else {
       let results = restaurants;
-      
-      const dataFetchedEvent = new CustomEvent('dataFetch');
-      document.dispatchEvent(dataFetchedEvent);
 
       if (cuisine != 'all') { // filter by cuisine
         results = results.filter(r => r.cuisine_type == cuisine);

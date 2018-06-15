@@ -139,8 +139,13 @@ const updateRestaurants = () => {
       console.error(error);
       return;
     }
+
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
+
+    
+    const dataFetchedEvent = new CustomEvent('dataFetch');
+    document.dispatchEvent(dataFetchedEvent);
   })
 }
 
