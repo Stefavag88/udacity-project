@@ -9,9 +9,10 @@ const IDB_VERSION = 1;
 export function fetchRestaurants(callback) {
 
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
-    upgradeDB.createObjectStore('stores', { keyPath: 'id' });
+    upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement:true })
+             .createIndex('by-id', 'id');
 
-    fetchDataAndSaveToIDB(dbPromise);
+    fetchDataAndSaveToIDB(dbPromise, callback);
   });
 
   dbPromise.then(db => {
@@ -20,7 +21,7 @@ export function fetchRestaurants(callback) {
     if (!dbExists) return;
 
     const tx = db.transaction("stores", "readonly");
-    tx.objectStore("stores")
+    tx.objectStore("stores").index('by-id')
       .getAll()
       .then(data => {
         callback(null, data);
@@ -33,7 +34,7 @@ export function fetchRestaurants(callback) {
   })
 }
 
-function fetchDataAndSaveToIDB(dbPromise){
+function fetchDataAndSaveToIDB(dbPromise, callback){
   fetch(API_URL).then(response => {
     if (!response.ok) {
       const error = response.statusText;
@@ -82,9 +83,10 @@ export const fetchRestaurantById = (id, callback) => {
 
     const storeExists = upgradeDB.objectStoreNames.contains("stores");
 
-    if (!storeExists)
-      upgradeDB.createObjectStore('stores', { keyPath: 'id' });
-
+    if (!storeExists){
+      upgradeDB.createObjectStore('stores', { keyPath: 'id',autoIncrement:true }).createIndex('by-id', 'id');
+    }
+      
     fetch(`${API_URL}/${id}`).then(response => {
       if (!response.ok) {
         const error = response.statusText;
@@ -109,11 +111,13 @@ export const fetchRestaurantById = (id, callback) => {
     if (!dbExists || dataFetched) return;
 
     const tx = db.transaction("stores");
-
-    tx.objectStore("stores")
-      .getAll()
+    const index = tx.objectStore("stores").index('by-id');
+    console.log("Index..", index);
+      index.get(parseInt(id))
       .then(data => {
-        callback(null, data[0]);
+        console.log('Id is a..', typeof id);
+        console.log(`Restaurant with id ${id}`, data)
+        callback(null, data);
         return tx.complete;
       })
       .catch(err => {

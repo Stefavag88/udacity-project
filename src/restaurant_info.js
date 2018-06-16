@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.error(error);
       return;
     }
+
+    const dataFetchedEvent = new CustomEvent('dataFetch');
+    document.dispatchEvent(dataFetchedEvent);
   });
 });
 
@@ -44,7 +47,7 @@ window.initMap = () => {
 const fetchRestaurantFromURL = (callback) => {
   
   if (self.restaurant) { 
-    callback(null, self.restaurant)
+    callback(null, self.restaurant);
     return;
   }
 
@@ -56,7 +59,7 @@ const fetchRestaurantFromURL = (callback) => {
   }
 
   fetchRestaurantById(id, (error, restaurant) => {
-    
+    console.log('fetch by id!!', restaurant);
     if (error)
       callback(error, null);
 
@@ -64,12 +67,11 @@ const fetchRestaurantFromURL = (callback) => {
       return;
     
     self.restaurant = restaurant;
-    const dataFetchedEvent = new CustomEvent('dataFetch');
-    document.dispatchEvent(dataFetchedEvent);
     
     fillBreadcrumb();
     fillRestaurantHTML();
-    callback(null, restaurant)
+
+    callback(null, restaurant);
   });
 }
 
