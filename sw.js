@@ -27,7 +27,14 @@
       caches.open(cacheName)
         .then(cache => cache.match(event.request, { ignoreSearch: true }))
         .then(response => {
-          return response || fetch(event.request);
+          let customResponse;
+          if(response){
+             customResponse= response.clone();
+             //not for production environments!!
+              customResponse.headers.set("Access-Control-Allow-Origin", "*");
+          };
+
+          return customResponse || fetch(event.request);
         })
     );
   });

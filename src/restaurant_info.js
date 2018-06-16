@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
       console.error(error);
       return;
     }
-
-    const dataFetchedEvent = new CustomEvent('dataFetch');
-    document.dispatchEvent(dataFetchedEvent);
   });
 });
 
@@ -33,6 +30,8 @@ const showMapOnScreen = () => {
  */
 window.initMap = () => {
 
+  if(!google) return;
+  
   self.map = new google.maps.Map(document.querySelector('.map'), {
     zoom: 16,
     center: self.restaurant.latlng,
@@ -67,9 +66,12 @@ const fetchRestaurantFromURL = (callback) => {
       return;
     
     self.restaurant = restaurant;
-    
+    console.log('Restaurant got value!!', self.restaurant);
     fillBreadcrumb();
     fillRestaurantHTML();
+
+    const dataFetchedEvent = new CustomEvent('dataFetch');
+    document.dispatchEvent(dataFetchedEvent);
 
     callback(null, restaurant);
   });

@@ -4,7 +4,7 @@
 <head>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/dist/home.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Restaurant Reviews</title>
 </head>
@@ -22,12 +22,12 @@
       <div role="application" aria-label="location" tabIndex="-1" class="map"></div>
     </section>
     <section tabIndex="0" class="filters">
-      <div class="filter-options">
+      <div role="application" class="filter-options">
         <h2 aria-label="restaurants filters">Filters</h2>
-        <select role="radio" class="neighborhoods-select" name="neighborhoods">
+        <select aria-label="neighborhoods filter" role="radio" id="neighborhoods-select" class="neighborhoods-select" name="neighborhoods">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select role="radio" class="cuisines-select" name="cuisines">
+        <select aria-label="cuisines filter" role="radio" id="cuisines-select" class="cuisines-select" name="cuisines">
           <option value="all">All Cuisines</option>
         </select>
       </div>
@@ -43,10 +43,8 @@
       <strong>Restaurant Reviews</strong>
     </a> All Rights Reserved.
   </footer>
-
-  <script src="./home.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvuD2PcEVKYueGsn4JYSFISBcCOri7zgQ&library=places"></script>
-
+  <script src="./home.js"></script>
 </body>
 
 </html>

@@ -68,7 +68,9 @@ const fetchNeighborhoods = () => {
 const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.querySelector('.neighborhoods-select');
   select.addEventListener('change', updateRestaurants);
+
   neighborhoods.forEach(neighborhood => {
+
     const option = document.createElement('option');
     option.innerHTML = neighborhood;
     option.value = neighborhood;

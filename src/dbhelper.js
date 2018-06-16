@@ -24,6 +24,12 @@ export function fetchRestaurants(callback) {
     tx.objectStore("stores").index('by-id')
       .getAll()
       .then(data => {
+
+        if(!data || data.length === 0){
+          fetchDataAndSaveToIDB(dbPromise, callback);
+          return;
+        }
+        
         callback(null, data);
         return tx.complete;
       })
@@ -111,12 +117,11 @@ export const fetchRestaurantById = (id, callback) => {
     if (!dbExists || dataFetched) return;
 
     const tx = db.transaction("stores");
-    const index = tx.objectStore("stores").index('by-id');
-    console.log("Index..", index);
+    const index = tx.objectStore("stores")
+                    .index('by-id');
+
       index.get(parseInt(id))
       .then(data => {
-        console.log('Id is a..', typeof id);
-        console.log(`Restaurant with id ${id}`, data)
         callback(null, data);
         return tx.complete;
       })

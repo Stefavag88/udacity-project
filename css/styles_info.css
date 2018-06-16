@@ -20,11 +20,11 @@ ul, li {
   color: #333;
 }
 a {
-	color: orange;
+	color: #5766A2;
 	text-decoration: none;
 }
 a:hover, a:focus {
-	color: #3397db;
+	color: #5766A2;
 	text-decoration: none;
 }
 a img{
@@ -39,14 +39,14 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 	display: block;
 }
 .main-content {
-  background-color: #f3f3f3;
+     background-color: #f7f7f7;
   min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 .footer {
-  background-color: #444;
-  color: #aaa;
+  background-color: #252831;
+  color: #fff;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 1.5em;
@@ -83,7 +83,7 @@ nav h1 a {
 .breadcrumb {
     padding: 0.2em 0 0.5em 0.5em;
     list-style: none;
-    background-color: #f3f3f3;
+       background-color: #f7f7f7;
     font-size: 2em;
     margin:0;
     width: 100%;
@@ -101,12 +101,12 @@ nav h1 a {
 
 
 .breadcrumb li a {
-    color: #0275d8;
+    color: #5766A2;
     text-decoration: none;
 }
 
 .breadcrumb li a:hover {
-    color: #01447e;
+    color: #5766A2;
     text-decoration: underline;
 }
 
@@ -147,7 +147,7 @@ nav h1 a {
   
   .restaurant-access-info h3{
     font-style: italic;
-    color: #f58500;
+    color: #5766A2;
     text-align:left;
     font-size:18pt;
   }
@@ -167,7 +167,7 @@ nav h1 a {
     width: 100%;
   }
   .restaurant-name {
-    color: #f58500;
+    color: #5766A2;
     font-family: Arial,sans-serif;
     font-size: 20pt;
     margin: 1em;
@@ -217,7 +217,7 @@ nav h1 a {
     padding: 1.5em;
   }
   .reviews-container h2 {
-    color: #f58500;
+    color: #5766A2;
     font-size: 20pt;
     padding-bottom: 1pt;
   }
@@ -227,7 +227,7 @@ nav h1 a {
   }
   .review-container {
     background-color: #fff;
-    border: 2px solid #f3f3f3;
+    border: 2px solid #f2f2f2;
     display: block;
     list-style-type: none;
     margin: 0 0 1em;
@@ -247,11 +247,11 @@ nav h1 a {
     align-items: center;
     line-height: 1.5em;
     padding:1em 1em 0 0;
-    border-bottom:1px solid #f3f3f3;
+    border-bottom:1px solid #f2f2f2;
   }
   
   .rating-star{
-    color:#f58500;
+    color:#5766A2;
     font-size:17pt;
   }
   .review-comments{
