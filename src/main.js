@@ -18,7 +18,7 @@ var markers = []
  */
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  document.addEventListener('dataFetch', showMapOnScreen,{once:true});
+  document.addEventListener('dataFetch', showMapOnScreen, { once: true });
 
   registerSW();
   fetchNeighborhoods();
@@ -27,10 +27,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-function showMapOnScreen(){
+function showMapOnScreen() {
   let mapDiv = document.querySelector('.hidden');
-    window.initMap();
-    mapDiv.classList.remove('hidden');
+  window.initMap();
+  mapDiv.classList.remove('hidden');
 }
 
 /**
@@ -38,12 +38,14 @@ function showMapOnScreen(){
  */
 const registerSW = () => {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('../sw.js')
-      .then(function (registration) {
-        console.log('Service Worker Registered');
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../sw.js')
+        .then(function (registration) {
+          console.log('Service Worker Registered from home!!!');
+        });
+      navigator.serviceWorker.ready.then(function (registration) {
+        console.log('Service Worker Ready');
       });
-    navigator.serviceWorker.ready.then(function (registration) {
-      console.log('Service Worker Ready');
     });
   }
 }
@@ -145,7 +147,7 @@ const updateRestaurants = () => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
 
-    
+
     const dataFetchedEvent = new CustomEvent('dataFetch');
     document.dispatchEvent(dataFetchedEvent);
   })

@@ -10,7 +10,8 @@ import { imageUrlForRestaurant } from './dbhelper';
 export const createResponsiveImage = (restaurant, imgElement, page) => {
 
     const imgPath = imageUrlForRestaurant(restaurant);
-    const size = page === 'home' ? '360w' : '800w';
+    const size = //page === //'home' ? '360w' : 
+    '800w';
 
     if (page === 'info') {
 
@@ -46,6 +47,14 @@ const lazyLoadImagesWithEvents = (images, setSrcSet) => {
                 images.forEach(function (lazyImage) {
                     if ((lazyImage.getBoundingClientRect().top <= window.innerHeight && lazyImage.getBoundingClientRect().bottom >= 0) && getComputedStyle(lazyImage).display !== "none") {
                         lazyImage.src = lazyImage.dataset.src;
+                        window.fetch(`${lazyImage.src}`).then(response => {
+                            console.log('Called fetch from IntersectionHelper', response);
+                            caches.open("img-0.1.3")
+                                  .then(cache => {
+                                    console.log("Caching from intersection Observer...", response.url);
+                                    cache.put(response.url, response.clone())
+                                  });
+                        })
                         if (setSrcSet)
                             lazyImage.srcset = lazyImage.dataset.srcset;
                         lazyImage.classList.remove("lazy");
@@ -83,8 +92,15 @@ const lazyLoadImagesWithIntersection = (images, setSrcSet) => {
                 if (entry.isIntersecting) {
                     let lazyImage = entry.target;
                     lazyImage.src = lazyImage.dataset.src;
+                    window.fetch(`${lazyImage.src}`).then(response => {
+                        caches.open("img-0.1.3")
+                              .then(cache => {
+                                cache.put(response.url, response.clone())
+                              });
+                    })
                     if (setSrcSet)
                         lazyImage.srcset = lazyImage.dataset.srcset;
+
                     lazyImage.classList.remove("lazy");
                     lazyImageObserver.unobserve(lazyImage);
                 }

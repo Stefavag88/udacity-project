@@ -8,7 +8,8 @@ let map;
 document.addEventListener('DOMContentLoaded', (event) => {
 
   document.addEventListener('dataFetch', showMapOnScreen,{once:true});
-
+  
+  registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -17,6 +18,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
+const registerSW = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('../sw.js')
+        .then(function (registration) {
+          console.log('Service Worker Registered from Info Page!!!');
+        });
+      navigator.serviceWorker.ready.then(function (registration) {
+        console.log('Service Worker Ready');
+      });
+    });
+  }
+}
 
 const showMapOnScreen = () => {
   let mapDiv = document.querySelector('.hidden');
@@ -31,7 +45,7 @@ const showMapOnScreen = () => {
 window.initMap = () => {
 
   if(!google) return;
-  
+
   self.map = new google.maps.Map(document.querySelector('.map'), {
     zoom: 16,
     center: self.restaurant.latlng,
@@ -58,7 +72,6 @@ const fetchRestaurantFromURL = (callback) => {
   }
 
   fetchRestaurantById(id, (error, restaurant) => {
-    console.log('fetch by id!!', restaurant);
     if (error)
       callback(error, null);
 
@@ -66,7 +79,6 @@ const fetchRestaurantFromURL = (callback) => {
       return;
     
     self.restaurant = restaurant;
-    console.log('Restaurant got value!!', self.restaurant);
     fillBreadcrumb();
     fillRestaurantHTML();
 
