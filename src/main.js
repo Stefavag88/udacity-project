@@ -18,8 +18,7 @@ var markers = []
  */
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  document.addEventListener('dataFetch', showMapOnScreen, { once: true });
-
+  //document.addEventListener('dataFetch', showMapOnScreen, { capture: true,  });
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
@@ -27,10 +26,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-function showMapOnScreen() {
-  let mapDiv = document.querySelector('.hidden');
+document.showMapOnScreen = () => {
+  let togglebtn = document.querySelector('#map-toggle-btn');
+  let mapDiv = document.querySelector('.map-container');
+  //togglebtn.classList.toggle("toggle-hide");
+  mapDiv.classList.toggle('hidden');
+  if(mapDiv.classList.contains("hidden")) return;
   window.initMap();
-  mapDiv.classList.remove('hidden');
 }
 
 /**
@@ -112,6 +114,8 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
+
+  if (!google) return;
 
   let loc = {
     lat: 40.722216,

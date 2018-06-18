@@ -2,13 +2,10 @@ import { fetchRestaurantById, mapMarkerForRestaurant } from "./dbhelper.js"
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 
-let restaurant;
-let map;
-
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  document.addEventListener('dataFetch', showMapOnScreen,{once:true});
-  
+  document.addEventListener('dataFetch', showMapOnScreen, { capture: true });
+
   registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -22,10 +19,10 @@ const registerSW = () => {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('../sw.js')
-        .then(function (registration) {
+        .then(registration => {
           console.log('Service Worker Registered from Info Page!!!');
         });
-      navigator.serviceWorker.ready.then(function (registration) {
+      navigator.serviceWorker.ready.then(registration => {
         console.log('Service Worker Ready');
       });
     });
@@ -44,7 +41,7 @@ const showMapOnScreen = () => {
  */
 window.initMap = () => {
 
-  if(!google) return;
+  if (!google) return;
 
   self.map = new google.maps.Map(document.querySelector('.map'), {
     zoom: 16,
@@ -58,14 +55,14 @@ window.initMap = () => {
  * Get current restaurant from page URL.
  */
 const fetchRestaurantFromURL = (callback) => {
-  
-  if (self.restaurant) { 
+
+  if (self.restaurant) {
     callback(null, self.restaurant);
     return;
   }
 
   const id = getParameterByName('id');
-  if (!id) { 
+  if (!id) {
     error = 'No restaurant id in URL'
     callback(error, null);
     return;
@@ -77,7 +74,7 @@ const fetchRestaurantFromURL = (callback) => {
 
     if (!restaurant)
       return;
-    
+
     self.restaurant = restaurant;
     fillBreadcrumb();
     fillRestaurantHTML();

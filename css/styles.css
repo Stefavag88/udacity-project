@@ -106,12 +106,32 @@ nav h1 a {
     text-decoration: none;
 }
 
+.toggle-hide{
+  display: none;
+}
 
 .breadcrumb li a:hover {
     color: #5766A2;
     text-decoration: underline;
 }
 
+#map-toggle-btn{
+  align-self: baseline;
+  width:50px;
+  height:50px;
+  border-radius: 50%;
+  z-index: 100;
+  padding-right: 1em;
+  background-color: #5766A2;
+  color: white;
+  box-shadow: 0 2px 6px #ccc;
+}
+
+/* .filters-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+} */
 .map-container{
   display: block;
   transition: all 0.4s linear;
@@ -130,12 +150,20 @@ nav h1 a {
   color: #fff;
 }
 
+.filters{
+  background-color: #252831;
+  width: 100%;
+}
 .filter-options {
   width: 100%;
-  background-color: #252831;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
 }
-
+.filter-selections{
+  display: flex;
+  justify-content: flex-start;
+}
 @media screen and (max-width:420px){
   .filter-options {
     font-size: 9pt;
@@ -144,7 +172,7 @@ nav h1 a {
     padding:0.2em;
   }
 }
-.filter-options h2 {
+.filters h2 {
   color: white;
   font-size: 1.3rem;
   font-weight: normal;
