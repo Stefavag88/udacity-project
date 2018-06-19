@@ -116,15 +116,26 @@ nav h1 a {
 }
 
 #map-toggle-btn{
-  align-self: baseline;
-  width:50px;
-  height:50px;
+  width:2em;
+  height:2em;
   border-radius: 50%;
   z-index: 100;
-  padding-right: 1em;
+  margin-top:0.5em;
+  margin-right: 1em;
   background-color: #5766A2;
   color: white;
-  box-shadow: 0 2px 6px #ccc;
+  font-weight: 700;
+  font-size: 24px;
+  cursor:pointer;
+  border:none;
+  box-shadow: 0 0.3em 0.6em #fff;
+  outline: none;
+  transition: all 0.256s linear; 
+}
+
+#map-toggle-btn:hover{
+  background-color: #252831;
+  box-shadow: 0 0.3em 0.6em #ccc;
 }
 
 /* .filters-header{
@@ -162,13 +173,14 @@ nav h1 a {
 }
 .filter-selections{
   display: flex;
+  align-items: center;
   justify-content: flex-start;
 }
 @media screen and (max-width:420px){
   .filter-options {
     font-size: 9pt;
   }
-  .filter-options select{
+  .filter-selections select{
     padding:0.2em;
   }
 }
@@ -179,7 +191,7 @@ nav h1 a {
   line-height: 1;
   padding:0.5em 1em 0 0.5em;
 }
-.filter-options select {
+.filter-selections select {
   background-color: white;
   border: 1px solid #fff;
   font-family: Arial,sans-serif;
@@ -267,7 +279,7 @@ nav h1 a {
 }
 
 .restaurants-list li a {
-  background-color: #5766A2;;
+  background-color: #5766A2;
   box-shadow: 0 0.3em 0.6em #666; 
   color: #fff;
   display: block;

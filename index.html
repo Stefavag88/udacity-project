@@ -22,17 +22,17 @@
       <div role="application" aria-label="location" tabIndex="-1" class="map"></div>
     </section>
     <section tabIndex="0" class="filters">
-      <h2 aria-label="restaurants filters">Filters</h2>
       <div role="application" class="filter-options">
-        <div role="application" class="filter-selections">
-            <select aria-label="neighborhoods filter" role="radio" id="neighborhoods-select" class="neighborhoods-select" name="neighborhoods">
-                <option value="all">All Neighborhoods</option>
-              </select>
-              <select aria-label="cuisines filter" role="radio" id="cuisines-select" class="cuisines-select" name="cuisines">
-                <option value="all">All Cuisines</option>
-              </select>
-        </div>
-        <button role="application" id="map-toggle-btn" onclick="showMapOnScreen()">Map</button>
+        <h2 aria-label="restaurants filters">Filters</h2>
+        <button role="application" title="Toggle Map" id="map-toggle-btn" onclick="showMapOnScreen()">&#x26EF;</button>
+      </div>
+      <div role="application" class="filter-selections">
+        <select aria-label="neighborhoods filter" role="radio" id="neighborhoods-select" class="neighborhoods-select" name="neighborhoods">
+          <option value="all">All Neighborhoods</option>
+        </select>
+        <select aria-label="cuisines filter" role="radio" id="cuisines-select" class="cuisines-select" name="cuisines">
+          <option value="all">All Cuisines</option>
+        </select>
       </div>
     </section>
     <section>

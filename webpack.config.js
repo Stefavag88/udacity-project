@@ -23,6 +23,9 @@ const config = {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
+    performance: {
+        maxEntrypointSize: 265000
+    },
     optimization: {
         minimizer: [
             new UglifyJsPlugin({
