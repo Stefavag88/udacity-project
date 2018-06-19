@@ -166,7 +166,6 @@ nav h1 a {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    margin-left:0;
   }
   
 
