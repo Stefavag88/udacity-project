@@ -4,8 +4,6 @@ import "../css/styles_info.css";
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  document.addEventListener('dataFetch', showMapOnScreen, { capture: true });
-
   registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -29,13 +27,20 @@ const registerSW = () => {
   }
 }
 
-const showMapOnScreen = () => {
-  let mapDiv = document.querySelector('.hidden');
+// const showMapOnScreen = () => {
+//   let mapDiv = document.querySelector('.hidden');
+//   window.initMap();
+//   mapDiv.classList.remove('hidden');
+// };
+
+document.showMapOnScreen = () => {
+  let mapDiv = document.querySelector('.map');
+  let mapbtn = document.querySelector('#map-toggle-btn');
+  mapbtn.classList.add("hidden");
+  mapDiv.classList.toggle('hidden');
+  if(mapDiv.classList.contains("hidden")) return;
   window.initMap();
-  mapDiv.classList.remove('hidden');
-};
-
-
+}
 /**
  * Initialize Google map, called from HTML.
  */

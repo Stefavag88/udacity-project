@@ -116,6 +116,31 @@ nav h1 a {
   background-color: #ccc;
   display: inline-block;
 }
+
+#map-toggle-btn{
+  align-self:center;
+  width:11em;
+  height:4em;
+  border-radius: 0.2em;
+  z-index: 100;
+  margin-top:0.5em;
+  margin-right: 1em;
+  background-color: #5766A2;
+  color: white;
+  font-weight: 700;
+  font-size: 24px;
+  cursor:pointer;
+  border:none;
+  box-shadow: 0 0.3em 0.6em #666;
+  outline: none;
+  transition: all 0.256s linear; 
+}
+
+#map-toggle-btn:hover{
+  background-color: #252831;
+  box-shadow: 0 0.3em 0.6em #ccc;
+}
+
 .hidden{
   display: none;
 }
@@ -124,7 +149,7 @@ nav h1 a {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: stretch;
 }
   .inside .map {
@@ -132,32 +157,47 @@ nav h1 a {
     height: 100%;
     width: 100%;
     align-self: stretch;
-    margin-bottom:0.3em;
+     margin-bottom:0.3em;
   }
+  
   .inside .restaurant-access-info{
     min-width:200px;
     padding-bottom:1em;
-  }
-  
-  .inside .restaurant-access-info{
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    margin-left:0;
   }
   
+
+
   .restaurant-access-info h3{
     font-style: italic;
     color: #5766A2;
     text-align:left;
     font-size:18pt;
   }
-  
+
+  @media screen and (max-width: 699px){
+    .inside .map-container {
+      display: flex;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: stretch;
+    }
+    .inside .restaurant-access-info, .inside .map, #map-toggle-btn{
+      margin: 0 auto;
+    }
+  }
+
   @media screen and (min-width:700px){
+
     .inside .map {
       background-color: #ccc;
       max-width: 65%;
     }
-  
+    
     .inside .restaurant-access-info{
       max-width:35%;
     }

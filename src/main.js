@@ -18,7 +18,6 @@ var markers = []
  */
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  //document.addEventListener('dataFetch', showMapOnScreen, { capture: true,  });
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 document.showMapOnScreen = () => {
-  let togglebtn = document.querySelector('#map-toggle-btn');
   let mapDiv = document.querySelector('.map-container');
   //togglebtn.classList.toggle("toggle-hide");
   mapDiv.classList.toggle('hidden');
@@ -150,10 +148,6 @@ const updateRestaurants = () => {
 
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
-
-
-    const dataFetchedEvent = new CustomEvent('dataFetch');
-    document.dispatchEvent(dataFetchedEvent);
   })
 }
 
