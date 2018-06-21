@@ -10,8 +10,7 @@ import { imageUrlForRestaurant } from './dbhelper';
 export const createResponsiveImage = (restaurant, imgElement, page) => {
 
     const imgPath = imageUrlForRestaurant(restaurant);
-    const size = //page === //'home' ? '360w' : 
-    '800w';
+    const size = '800w';
 
     if (page === 'info') {
 

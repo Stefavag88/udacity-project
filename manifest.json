@@ -1,0 +1,20 @@
+{
+  "name": "RestaurantReviews",
+  "short_name": "RestReview",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#252831",
+  "lang": "en-US",
+  "description": "Always find good food near you",
+  "icons": [
+    {
+      "src": "/splash-icon.png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/restaurant-icon.png",
+      "sizes": "192x192"
+    }
+  ]
+}
