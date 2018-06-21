@@ -9,11 +9,11 @@
   "description": "Always find good food near you",
   "icons": [
     {
-      "src": "/splash-icon.png",
+      "src": "/restaurant_icon2-512w.png",
       "sizes": "512x512"
     },
     {
-      "src": "/restaurant-icon.png",
+      "src": "/restaurant_icon2-192w.png",
       "sizes": "192x192"
     }
   ]
