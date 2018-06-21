@@ -27,12 +27,6 @@ const registerSW = () => {
   }
 }
 
-// const showMapOnScreen = () => {
-//   let mapDiv = document.querySelector('.hidden');
-//   window.initMap();
-//   mapDiv.classList.remove('hidden');
-// };
-
 document.showMapOnScreen = () => {
   let mapDiv = document.querySelector('.map');
   let mapbtn = document.querySelector('#map-toggle-btn');

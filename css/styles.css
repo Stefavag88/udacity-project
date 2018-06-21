@@ -138,11 +138,6 @@ nav h1 a {
   box-shadow: 0 0.3em 0.6em #ccc;
 }
 
-/* .filters-header{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
 .map-container{
   display: block;
   transition: all 0.4s linear;

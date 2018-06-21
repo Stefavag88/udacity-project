@@ -103,23 +103,6 @@ export const fetchRestaurantById = (id, callback) => {
     }
     
     fetchDataAndSaveToIDB(restaurantURL, dbPromise, callback, dataFetched);
-    // fetch(`${API_URL}/${id}`).then(response => {
-    //   if (!response.ok) {
-    //     const error = response.statusText;
-    //     callback(error, null);
-    //     return;
-    //   }
-    //   const responeClone = response.clone();
-
-    //   saveDataToIDB(dbPromise, responeClone);
-
-    //   response.json()
-    //     .then(data => {
-    //       dataFetched = true;
-    //       callback(null, data)
-    //     })
-    //     .catch(err => { callback(err, null) })
-    // });
   });
 
   dbPromise.then(db => {
