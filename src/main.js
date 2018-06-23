@@ -8,11 +8,11 @@ import {
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles.css";
 
-let restaurants,
-  neighborhoods,
-  cuisines
-var map
-var markers = []
+// let restaurants,
+//   neighborhoods,
+//   cuisines
+// var map
+// var markers = []
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -26,11 +26,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 document.showMapOnScreen = () => {
-  let mapDiv = document.querySelector('.map-container');
-  //togglebtn.classList.toggle("toggle-hide");
+  const mapDiv = document.querySelector('.map-container');
+  const map = document.querySelector('.map');
+
   mapDiv.classList.toggle('hidden');
   if(mapDiv.classList.contains("hidden")) return;
-  window.initMap();
+  initMap(map);
 }
 
 /**
@@ -111,7 +112,7 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
 /**
  * Initialize Google map, called from HTML.
  */
-window.initMap = () => {
+const initMap = (map) => {
 
   if (!google) return;
 
@@ -131,14 +132,14 @@ window.initMap = () => {
  * Update page and map for current restaurants.
  */
 const updateRestaurants = () => {
-  const cSelect = document.querySelector('.cuisines-select');
-  const nSelect = document.querySelector('.neighborhoods-select');
+  const cuisineSelect = document.querySelector('.cuisines-select');
+  const neighborhoodSelect = document.querySelector('.neighborhoods-select');
 
-  const cIndex = cSelect.selectedIndex;
-  const nIndex = nSelect.selectedIndex;
+  const cuisineIndex = cuisineSelect.selectedIndex;
+  const neighborhoodIndex = neighborhoodSelect.selectedIndex;
 
-  const cuisine = cSelect[cIndex].value;
-  const neighborhood = nSelect[nIndex].value;
+  const cuisine = cuisineSelect[cuisineIndex].value;
+  const neighborhood = neighborhoodSelect[neighborhoodIndex].value;
 
   getByCuisineAndNeighbourhood(cuisine, neighborhood, (error, restaurants) => {
     if (error) { // Got an error!

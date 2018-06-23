@@ -48,6 +48,13 @@ const lazyLoadImagesWithEvents = (images, setSrcSet) => {
                         lazyImage.src = lazyImage.dataset.src;
                         if (setSrcSet)
                             lazyImage.srcset = lazyImage.dataset.srcset;
+
+                        window.fetch(`${lazyImage.src}`).then(response => {
+                            caches.open("img-0.1.3")
+                                .then(cache => {
+                                    cache.put(response.url, response.clone())
+                                });
+                        });
                         lazyImage.classList.remove("lazy");
 
                         images = images.filter(function (image) {
@@ -78,23 +85,31 @@ const lazyLoadImagesWithEvents = (images, setSrcSet) => {
  */
 const lazyLoadImagesWithIntersection = (images, setSrcSet) => {
 
-        let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    let lazyImage = entry.target;
-                    lazyImage.src = lazyImage.dataset.src;
-                    if (setSrcSet)
-                        lazyImage.srcset = lazyImage.dataset.srcset;
+    let lazyImageObserver = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                let lazyImage = entry.target;
+                lazyImage.src = lazyImage.dataset.src;
 
-                    lazyImage.classList.remove("lazy");
-                    lazyImageObserver.unobserve(lazyImage);
-                }
-            });
-        });
+                window.fetch(`${lazyImage.src}`).then(response => {
+                    caches.open("img-0.1.3")
+                        .then(cache => {
+                            cache.put(response.url, response.clone())
+                        });
+                });
 
-        images.forEach(function (lazyImage) {
-            lazyImageObserver.observe(lazyImage);
+                if (setSrcSet)
+                    lazyImage.srcset = lazyImage.dataset.srcset;
+
+                lazyImage.classList.remove("lazy");
+                lazyImageObserver.unobserve(lazyImage);
+            }
         });
+    });
+
+    images.forEach(function (lazyImage) {
+        lazyImageObserver.observe(lazyImage);
+    });
 }
 
 
@@ -105,7 +120,7 @@ const lazyLoadImagesWithIntersection = (images, setSrcSet) => {
  */
 export const lazyLoadImages = (lazyImages, setSrcSet) => {
 
-    if("IntersectionObserver" in window)
+    if ("IntersectionObserver" in window)
         lazyLoadImagesWithIntersection(lazyImages, setSrcSet);
     else
         lazyLoadImagesWithEvents(lazyImages, setSrcSet);
