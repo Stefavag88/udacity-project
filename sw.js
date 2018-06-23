@@ -60,7 +60,6 @@ self.addEventListener('fetch', event => {
           //not for production environments!!
           customResponse.headers.set("Access-Control-Allow-Origin", "*");
         }
-        console.log(event.request);
         return customResponse || fetch(event.request);
       })
       .catch(err => console.log("SW Error!!", err))
