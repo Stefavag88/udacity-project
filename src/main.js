@@ -8,11 +8,6 @@ import {
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles.css";
 
-// let restaurants,
-//   neighborhoods,
-//   cuisines
-// var map
-// var markers = []
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -120,7 +115,7 @@ const initMap = (map) => {
     lat: 40.722216,
     lng: -73.987501
   };
-  self.map = new google.maps.Map(document.querySelector('.map'), {
+  self.map = new google.maps.Map(map, {
     zoom: 12,
     center: loc,
     scrollwheel: false
