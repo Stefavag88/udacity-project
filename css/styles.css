@@ -38,6 +38,10 @@ h1, h2, h3, h4, h5, h6 {
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
+li, .details-btn, .restaurant-img ,select{
+  border-radius: 0.1em;
+}
 .main-content {
   background-color: #F8F8F8;
   min-height: 100%;
@@ -83,17 +87,15 @@ nav h1 a {
 .breadcrumb {
     padding: 0.2em 0 0.5em 0.5em;
     list-style: none;
-       background-color: #f7f7f7;
+    background-color: #f7f7f7;
     font-size: 2em;
     margin:0;
     width: 100%;
 }
 
-
 .breadcrumb li {
     display: inline;
 }
-
 
 .breadcrumb li+li:before {
     padding: 8px;
@@ -128,14 +130,14 @@ nav h1 a {
   font-size: 24px;
   cursor:pointer;
   border:none;
-  box-shadow: 0 0.3em 0.6em #fff;
+  box-shadow: 0 0.2em 0.4em #fff;
   outline: none;
   transition: all 0.256s linear; 
 }
 
 #map-toggle-btn:hover{
   background-color: #252831;
-  box-shadow: 0 0.3em 0.6em #ccc;
+  box-shadow: 0 0.1em 0.2em #ccc;
 }
 
 .map-container{
@@ -143,7 +145,7 @@ nav h1 a {
   transition: all 0.4s linear;
 }
 .map {
-  min-height: 55vh;
+  min-height: 40vh;
   width: 100%;
   background-color: #ccc;
 }
@@ -196,9 +198,8 @@ nav h1 a {
   padding: 0.2em;
 }
 
-
 .restaurants-list {
-     background-color: #f7f7f7;
+  background-color: #f7f7f7;
   margin: 0;
   padding: 0;
   list-style-type: none;
@@ -268,6 +269,11 @@ nav h1 a {
   padding: 0.5em 0.5em;
   text-transform: uppercase;
 }
+
+.restaurants-list li h4{
+  font-weight: 600;
+}
+
 .restaurants-list span, .restaurants-list h4 {
   padding:0 0.5em;
   font-size: 10pt;

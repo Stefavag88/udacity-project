@@ -99,7 +99,6 @@ nav h1 a {
     content: "/\00a0";
 }
 
-
 .breadcrumb li a {
     color: #5766A2;
     text-decoration: none;
@@ -111,7 +110,7 @@ nav h1 a {
 }
 
 .map {
-  min-height: 55vh;
+  min-height: 40vh;
   width: 100%;
   background-color: #ccc;
   display: inline-block;
@@ -168,8 +167,6 @@ nav h1 a {
     justify-content: flex-end;
   }
   
-
-
   .restaurant-access-info h3{
     font-style: italic;
     color: #5766A2;
@@ -264,6 +261,11 @@ nav h1 a {
     margin: 0;
     padding: 0;
   }
+
+  .reviews-list li{
+    border-radius:0.1em;
+  }
+
   .review-container {
     background-color: #fff;
     border: 2px solid #f2f2f2;

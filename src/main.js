@@ -148,6 +148,7 @@ const updateRestaurants = () => {
 
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
+    addMarkersToMap();
   })
 }
 
@@ -203,11 +204,12 @@ const createRestaurantHTML = (restaurant) => {
   address.innerHTML = restaurant.address;
   li.append(address);
 
-  const more = document.createElement('a');
-  more.innerHTML = 'View Details';
-  more.setAttribute('aria-label', `Navigate to ${restaurant.name} restaurant review`);
-  more.href = restaurantUrl(restaurant);
-  li.append(more)
+  const button = document.createElement('a');
+  button.classList.add('details-btn');
+  button.innerHTML = 'View Details';
+  button.setAttribute('aria-label', `Navigate to ${restaurant.name} restaurant review`);
+  button.href = restaurantUrl(restaurant);
+  li.append(button)
 
   return li
 }
