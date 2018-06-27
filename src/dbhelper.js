@@ -1,16 +1,18 @@
 import idb from 'idb';
+import UIRestaurantData from './uiRestaurantData';
 
 //const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
 const API_URL = `http://localhost:1337/restaurants`;
 const IDB_VERSION = 1;
+const REVIEWS_URL = `http://localhost:1337/reviews`;
 /**
  * Fetch all restaurants.
  */
 export function fetchRestaurants(callback) {
 
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
-    upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement:true })
-             .createIndex('by-id', 'id');
+    upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
+      .createIndex('by-id', 'id');
 
     fetchDataAndSaveToIDB(API_URL, dbPromise, callback);
   });
@@ -26,10 +28,10 @@ export function fetchRestaurants(callback) {
       .getAll()
       .then(data => {
 
-        if(!data || data.length === 0 || data.length < 10)
+        if (!data || data.length === 0 || data.length < 10)
           fetchDataAndSaveToIDB(API_URL, dbPromise, callback);
         else
-         callback(null, data);
+          callback(null, data);
 
         return tx.complete;
       })
@@ -40,44 +42,79 @@ export function fetchRestaurants(callback) {
   })
 }
 
-function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnce = null){
-  fetch(fetchURL).then(response => {
-    if (!response.ok) {
-      const error = response.statusText;
-      callback(error, null);
-      return;
-    }
+function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnce = null) {
 
-    const responeClone = response.clone();
-    saveDataToIDB(dbPromise, responeClone);
+  if (Array.isArray(fetchURL)) {
 
-    response.json()
-      .then(data => {
+    let uiCombinedData = new UIRestaurantData();
 
-        if(ensureFetchDataOnce)
-          ensureFetchDataOnce = true;
+    Promise.all(fetchURL.map(url => {
+      fetch(url)
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          console.log("Raw data!!", data);
+          if(Array.isArray(data)){
+            uiCombinedData.reviews = data;
+          }else{
+            uiCombinedData.info = data;
+          }
+        })
+        .catch(err => {
+          console.log("Promise All ERROR!", err);
+        })
+    })).then(() => {
+      console.log("Combined Data!!", uiCombinedData);
+    })
+  }
+  else {
+    fetch(fetchURL).then(response => {
+      if (!response.ok) {
+        const error = response.statusText;
+        callback(error, null);
+        return;
+      }
 
-        callback(null, data)
-       })
-      .catch(err => { callback(err, null) })
-  });
+      const responeClone = response.clone();
+      saveDataToIDB(dbPromise, responeClone);
+
+      response.json()
+        .then(data => {
+
+          if (ensureFetchDataOnce)
+            ensureFetchDataOnce = true;
+
+          callback(null, data)
+        })
+        .catch(err => { callback(err, null) })
+    });
+  }
 }
 
-function saveDataToIDB(dbPromise, response) {
+function saveDataToIDB(dbPromise, response, objectStoreName) {
   dbPromise.then(db => {
-    const tx = db.transaction('stores', 'readwrite');
+    const storesTX = db.transaction('stores', 'readwrite');
+    const reviewsTX = db.transaction('reviews', 'readwrite');
+
     response
       .json()
-      .then(restaurants => {
+      .then(data => {
 
-        if (Array.isArray(restaurants)) {
-          restaurants.forEach(r => {
-            tx.objectStore('stores').put(r);
-          })
+        if (Array.isArray(data)) {
+          if(objectStoreName === 'reviews'){
+            data.forEach(d => {
+              reviews.objectStore('reviews').put(d, d[0].restaurant_id);
+            })
+          }else{
+            data.forEach(d => {
+              storesTX.objectStore('stores').put(d);
+            })
+          }
         } else {
-          tx.objectStore("stores").put(restaurants);
+          storesTX.objectStore('stores').put(data);
+          reviewsTX.objectStore('reviews').put(data.reviews, data.info.id);
         }
-        return tx.complete;
       })
       .catch(err => {
         console.log(`Could not save restaurant/s to idb...`, err);
@@ -92,17 +129,25 @@ export const fetchRestaurantById = (id, callback) => {
   // fetch all restaurants with proper error handling.
   let dataFetched = false;
   const restaurantURL = `${API_URL}/${id}`;
+  const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
+
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
 
-    const storeExists = upgradeDB.objectStoreNames.contains("stores");
+    const storesDBExists = upgradeDB.objectStoreNames.contains('stores');
+    const reviewsDBExists = upgradeDB.objectStoreNames.contains('reviews');
 
-    if (!storeExists){
+    if (!storesDBExists) {
       upgradeDB
-        .createObjectStore('stores', { keyPath: 'id',autoIncrement:true })
+        .createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
         .createIndex('by-id', 'id');
     }
-    
-    fetchDataAndSaveToIDB(restaurantURL, dbPromise, callback, dataFetched);
+
+    if (!reviewsDBExists) {
+      upgradeDB
+        .createObjectStore('reviews');
+    }
+
+    fetchDataAndSaveToIDB([restaurantURL, reviewsURL], dbPromise, callback, dataFetched);
   });
 
   dbPromise.then(db => {
@@ -110,21 +155,18 @@ export const fetchRestaurantById = (id, callback) => {
     if (!dbExists) return;
     const tx = db.transaction("stores");
     const index = tx.objectStore("stores")
-                    .index('by-id');
+      .index('by-id');
 
-      index.get(parseInt(id))
+    index.get(parseInt(id))
       .then(data => {
 
-        if(!data || data.length === 0)
+        if (!data || data.length === 0)
           fetchDataAndSaveToIDB(restaurantURL, dbPromise, callback, dataFetched);
-        else 
+        else
           callback(null, data);
-
-        return tx.complete;
       })
       .catch(err => {
         callback(err, null);
-        return tx.abort;
       });
   });
 }
@@ -229,7 +271,7 @@ export const urlForRestaurant = (restaurant) => `./restaurant.html?id=${restaura
  */
 export const imageUrlForRestaurant = (restaurant) => {
 
-  const {photograph} = restaurant;
+  const { photograph } = restaurant;
   return `/img/${photograph}`;
 }
 
