@@ -36,15 +36,49 @@ export const createIsFavouriteHeart = (restaurant) => {
 }
 
 const toggleUIAndIDBFavorite = (event) => {
-
-    console.log("Clicked!!!");
     const element = event.target;
     const restaurantId = parseInt(element.id);
     element.classList.toggle('heart-favourite');
 
+    const message = element.classList.contains('heart-favourite')
+                        ? 'added to favourites'
+                        : 'removed from favourites';
+
+
+
+    showNotification(message, 10000);
+
     toggleIDBFavoriteFlag(restaurantId)
 }
 
-export const showNotification = (message) => {
+export const showNotification = (message, duration = null) => {
+    const notificationBox = document.querySelector('.notification-box');
+    const closeBtn = document.querySelector('.notification-close');
+    const messageBox = document.querySelector('.notification-message');
 
+    messageBox.innerHTML = message;
+
+    closeBtn.removeEventListener('click', notificationCloseBtnEventHandler);
+    closeBtn.addEventListener('click', notificationCloseBtnEventHandler);
+
+    notificationBox.classList.remove('slide-out');
+    notificationBox.classList.add('slide-in');
+
+    if(duration)
+        setTimeout(() => {
+            notificationBox.classList.remove('slide-in');
+            notificationBox.classList.add('slide-out');
+        }, duration);
 }
+
+const notificationCloseBtnEventHandler = (event) => {
+    const notificationBox = document.querySelector('.notification-box');
+    const closeBtn = document.querySelector('.notification-close');
+    
+    if(notificationBox.classList.contains('slide-in')){
+        notificationBox.classList.remove('slide-in');
+        notificationBox.classList.add('slide-out');
+    }
+
+    closeBtn.removeEventListener('click', notificationCloseBtnEventHandler);
+};

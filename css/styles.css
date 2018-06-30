@@ -270,6 +270,66 @@ nav h1 a {
   text-transform: uppercase;
 }
 
+.notification-box{
+  position: absolute;
+  transform: translateX(-100%);
+  -webkit-transform: translateX(-100%);
+  top:25%;
+  width:18em;
+  color:  #fff;
+  background-color: #5766A2;
+  border-radius: 0.1em;
+  font-variant-caps: small-caps;
+  font-size: 14pt;
+  padding:0.2em 0.5em;
+  display: inline-flex;
+  z-index: 999;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0.2em 0.4em #ccc; 
+}
+
+.notification-close{
+  background-color: #5766A2;
+  padding-left:0.2em;
+  border:none;
+  outline: none;
+  width:2em;
+  border-left: 1px solid #fff;
+  color:#EA4335;
+  font-size:22pt;
+  font-weight: 700;
+}
+
+
+.slide-in {
+  animation: slide-in 0.5s forwards;
+  -webkit-animation: slide-in 0.5s forwards;
+}
+
+.slide-out {
+  animation: slide-out 0.5s forwards;
+  -webkit-animation: slide-out 0.5s forwards;
+}
+  
+@keyframes slide-in {
+  100% { transform: translateX(calc(50vw - 9em)); }
+}
+
+@-webkit-keyframes slide-in {
+  100% { -webkit-transform: translateX(calc(50vw - 9em)); }
+}
+  
+@keyframes slide-out {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(-150%); }
+}
+
+@-webkit-keyframes slide-out {
+  0% { -webkit-transform: translateX(-100%); }
+  100% { -webkit-transform: translateX(-150%); }
+}
+
 .img-container{
   position:relative;
 }
