@@ -3,7 +3,8 @@ import {
   fetchNeighborhoods as getNeighborhoods,
   fetchRestaurantByCuisineAndNeighborhood as getByCuisineAndNeighbourhood,
   urlForRestaurant as restaurantUrl,
-  mapMarkerForRestaurant as restaurentMarker
+  mapMarkerForRestaurant as restaurentMarker,
+  toggleFavoriteRestaurant as toggleIDBFavoriteFlag
 } from "./dbhelper";
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles.css";
@@ -184,9 +185,18 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
 const createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
+  const imgContainer = document.createElement('div');
+  imgContainer.classList.add('img-container');
+  
   const image = document.createElement('img');
   const responsiveImage = createResponsiveImage(restaurant, image, 'home');
-  li.append(responsiveImage);
+
+  const favouriteHeart = createIsFavouriteHeart(restaurant);
+
+  imgContainer.append(responsiveImage);
+  imgContainer.append(favouriteHeart)
+
+  li.append(imgContainer);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
@@ -208,6 +218,37 @@ const createRestaurantHTML = (restaurant) => {
   li.append(button)
 
   return li
+}
+
+const createIsFavouriteHeart = (restaurant) => {
+
+  console.log("In createIsFavouriteHeart!!", restaurant);
+  const favouriteHeart = document.createElement('div');
+
+  favouriteHeart.classList.add('fav-heart');
+  favouriteHeart.innerHTML = '&#x2764';
+  favouriteHeart.setAttribute('role', 'application');
+  favouriteHeart.setAttribute('title','Mark as favourite!');
+  favouriteHeart.setAttribute('id', `${restaurant.id}`);
+
+  if(restaurant.is_favorite){
+    favouriteHeart.setAttribute('title','Unmark favourite');
+    favouriteHeart.classList.add('heart-favourite');
+  }
+
+  favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
+
+  return favouriteHeart;
+}
+
+const toggleUIAndIDBFavorite = (event) => {
+
+  console.log("Clicked!!!");
+  const element = event.target;
+  const restaurantId = parseInt(element.id);
+  element.classList.toggle('heart-favourite');
+
+  toggleIDBFavoriteFlag(restaurantId)
 }
 
 /**

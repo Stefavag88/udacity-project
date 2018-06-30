@@ -1,4 +1,6 @@
-import { fetchRestaurantById, mapMarkerForRestaurant } from "./dbhelper.js"
+import { fetchRestaurantById,
+         mapMarkerForRestaurant ,
+        toggleFavoriteRestaurant as toggleIDBFavoriteFlag} from "./dbhelper.js"
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 import UIRestaurantData from "./uiRestaurantData.js";
@@ -86,6 +88,38 @@ const fetchRestaurantFromURL = (callback) => {
   });
 }
 
+const createIsFavouriteHeart = (restaurant) => {
+
+  console.log("In createIsFavouriteHeart!!", restaurant);
+  const favouriteHeart = document.createElement('div');
+
+  favouriteHeart.classList.add('fav-heart');
+  favouriteHeart.innerHTML = '&#x2764';
+  favouriteHeart.setAttribute('role', 'application');
+  favouriteHeart.setAttribute('title','Mark as favourite!');
+  favouriteHeart.setAttribute('id', `${restaurant.id}`);
+
+  if(restaurant.is_favorite){
+    console.log('ITS A FAV!!!');
+    favouriteHeart.setAttribute('title','Unmark favourite');
+    favouriteHeart.classList.add('heart-favourite');
+  }
+
+  favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
+
+  return favouriteHeart;
+}
+
+const toggleUIAndIDBFavorite = (event) => {
+
+  console.log("Clicked!!!");
+  const element = event.target;
+  const restaurantId = parseInt(element.id);
+  element.classList.toggle('heart-favourite');
+
+  toggleIDBFavoriteFlag(restaurantId)
+}
+
 /**
  * Create restaurant HTML and add it to the webpage
  */
@@ -95,6 +129,9 @@ const fillRestaurantHTML = (restaurantInfo) => {
 
   const image = createResponsiveImage(restaurantInfo, document.querySelector('.restaurant-img'), 'info');
   lazyLoadImages([image], true);
+
+  const imgContainer = document.querySelector('.img-container');
+  imgContainer.append(createIsFavouriteHeart(restaurantInfo));
 
   const cuisine = document.querySelector('.restaurant-cuisine');
   cuisine.innerHTML = restaurantInfo.cuisine_type;

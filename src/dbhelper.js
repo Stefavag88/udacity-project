@@ -61,21 +61,20 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
           })
           .then(() => {
             clonedResponses.forEach(response => {
-              if(!response.ok)
+              if (!response.ok)
                 callback(response.statusText, null);
-              else{
+              else {
                 saveDataToIDB(dbPromise, response);
               }
             });
           })
           .catch(err => {
-            console.error("Error!",err)
+            console.error("Error!", err)
             callback(err, null);
           })
-    });
+      });
   }
   else {
-    console.log("Home Page!!", fetchURL);
     fetch(fetchURL).then(response => {
       if (!response.ok) {
         const error = response.statusText;
@@ -100,31 +99,30 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
 }
 
 function saveDataToIDB(dbPromise, response) {
-
-  console.log("saveDataToIDB!!", response);
   dbPromise.then(db => {
     let reviewsTX;
-    if(response.url.includes('reviews')){
+    if (response.url.includes('reviews')) {
       reviewsTX = db.transaction('reviews', 'readwrite');
     }
 
     const storesTX = db.transaction('stores', 'readwrite');
-  
+
     response
       .json()
       .then(data => {
 
         if (Array.isArray(data)) {
-          if(response.url.includes('reviews')){
-              reviewsTX.objectStore('reviews').put(data, parseInt(data[0].restaurant_id));
-          }else{
+          if (response.url.includes('reviews')) {
+            reviewsTX.objectStore('reviews').put(data, parseInt(data[0].restaurant_id));
+          } else {
             data.forEach(d => {
               storesTX.objectStore('stores').put(d);
             })
           }
-        } else {
-          storesTX.objectStore('stores').put(data);
-        }
+         } 
+        //else {
+        //   storesTX.objectStore('stores').get()
+        // }
       })
       .catch(err => {
         console.log(`Could not save restaurant/s to idb...`, err);
@@ -143,9 +141,7 @@ export const fetchRestaurantById = (id, callback) => {
   const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
   const combinedURLs = [restaurantURL, reviewsURL];
 
-  console.log("FETCHING BY ID!!", combinedURLs);
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
-    console.log("IDB OPENED!!");
     const storesDBExists = upgradeDB.objectStoreNames.contains('stores');
     const reviewsDBExists = upgradeDB.objectStoreNames.contains('reviews');
 
@@ -153,22 +149,19 @@ export const fetchRestaurantById = (id, callback) => {
       upgradeDB
         .createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
         .createIndex('by-id', 'id');
-    
-    if (!reviewsDBExists) 
+
+    if (!reviewsDBExists)
       upgradeDB
         .createObjectStore('reviews');
 
     fetchDataAndSaveToIDB(combinedURLs, dbPromise, callback, dataFetched);
   });
-  console.log("DBPROMISE??",dbPromise);
 
   dbPromise.then(db => {
     const storesDBExists = db.objectStoreNames.contains('stores');
     const reviewsDBExists = db.objectStoreNames.contains('reviews');
 
-    if(!storesDBExists || !reviewsDBExists) return;
-
-    
+    if (!storesDBExists || !reviewsDBExists) return;
 
     const storesTX = db.transaction('stores').objectStore('stores').index('by-id').get(parseInt(id));
     const reviewsTX = db.transaction('reviews').objectStore('reviews').get(parseInt(id));
@@ -177,7 +170,7 @@ export const fetchRestaurantById = (id, callback) => {
     Promise.all([storesTX, reviewsTX])
       .then(data => {
         const isAnyNull = data.some(d => d === null || d === undefined);
-        if (!data || isAnyNull )
+        if (!data || isAnyNull)
           //Fetch again and store results
           fetchDataAndSaveToIDB(combinedURLs, dbPromise, callback, dataFetched);
         else
@@ -291,6 +284,31 @@ export const imageUrlForRestaurant = (restaurant) => {
 
   const { photograph } = restaurant;
   return `/img/${photograph}`;
+}
+
+/**
+ * Toggle Restaurant favourite flag.
+ */
+export const toggleFavoriteRestaurant = (restaurantId, callback) => {
+  const dbPromise = idb.open('restaurants', IDB_VERSION);
+
+  dbPromise
+    .then(db => {
+      const restaurantsStore = db.transaction('stores', 'readwrite')
+        .objectStore('stores')
+        .index('by-id')
+        .get(restaurantId)
+        .then(r => {
+
+          r.is_favorite = !r.is_favorite;
+          db.transaction('stores', 'readwrite')
+            .objectStore('stores')
+            .put(r)
+        })
+        .catch(err => {
+          console.error("Error in updating flag!!", err);
+        })
+    })
 }
 
 /**

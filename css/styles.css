@@ -270,6 +270,24 @@ nav h1 a {
   text-transform: uppercase;
 }
 
+.img-container{
+  position:relative;
+}
+
+.fav-heart{
+  position: absolute;
+  font-size: 22pt;
+  top:5%;
+  left:85%;
+  z-index:100;
+  color: #fff;
+  cursor: pointer;
+  text-shadow: 0 0.2em 0.4em #ccc;
+}
+
+.heart-favourite{
+  color: #EA4335
+}
 .restaurants-list li h4{
   font-weight: 600;
 }

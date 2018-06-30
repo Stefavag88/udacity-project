@@ -185,6 +185,9 @@ nav h1 a {
     .inside .restaurant-access-info, .inside .map, #map-toggle-btn{
       margin: 0 auto;
     }
+    .fav-heart{
+      right:7%;
+    }
   }
 
   @media screen and (min-width:700px){
@@ -214,7 +217,33 @@ nav h1 a {
     .restaurant-name{
       font-size: 16pt;
     }
+
+    .fav-heart{
+      right:10%;
+      font-size: 22pt;
+    }
   }
+
+  .img-container{
+    position:relative;
+    width:100%;
+  }
+  
+  .fav-heart{
+    position: absolute;
+    font-size: 30pt;
+    top:2%;
+    right:2%;
+    z-index:100;
+    color: #fff;
+    cursor: pointer;
+    text-shadow: 0 0.2em 0.4em #ccc;
+  }
+  
+  .heart-favourite{
+    color: #EA4335
+  }
+
   .restaurant-img {
     width: 100%;
     object-fit: cover;
