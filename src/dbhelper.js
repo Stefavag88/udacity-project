@@ -290,6 +290,8 @@ export const imageUrlForRestaurant = (restaurant) => {
  * Toggle Restaurant favourite flag.
  */
 export const toggleFavoriteRestaurant = (restaurantId, callback) => {
+
+
   const dbPromise = idb.open('restaurants', IDB_VERSION);
 
   dbPromise
@@ -301,9 +303,15 @@ export const toggleFavoriteRestaurant = (restaurantId, callback) => {
         .then(r => {
 
           r.is_favorite = !r.is_favorite;
-          db.transaction('stores', 'readwrite')
+          fetch(`${API_URL}/${restaurantId}/?is_favorite=${r.is_favorite}`,
+          {method:'PUT'}
+          )
+          .then((resp) => {
+            console.log("PUT IN SAILSDB??", resp);
+            db.transaction('stores', 'readwrite')
             .objectStore('stores')
             .put(r)
+          })
         })
         .catch(err => {
           console.error("Error in updating flag!!", err);

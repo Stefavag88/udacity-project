@@ -3,9 +3,9 @@ import {
   fetchNeighborhoods as getNeighborhoods,
   fetchRestaurantByCuisineAndNeighborhood as getByCuisineAndNeighbourhood,
   urlForRestaurant as restaurantUrl,
-  mapMarkerForRestaurant as restaurentMarker,
-  toggleFavoriteRestaurant as toggleIDBFavoriteFlag
+  mapMarkerForRestaurant as restaurentMarker
 } from "./dbhelper";
+import * as common from './commonActions';
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles.css";
 
@@ -14,7 +14,7 @@ import "../css/styles.css";
  */
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  registerSW();
+  common.registerSW("Home");
   fetchNeighborhoods();
   fetchCuisines();
   updateRestaurants();
@@ -28,23 +28,6 @@ document.showMapOnScreen = () => {
   mapDiv.classList.toggle('hidden');
   if(mapDiv.classList.contains("hidden")) return;
   initMap(map);
-}
-
-/**
- * Register service Worker
- */
-const registerSW = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('../sw.js')
-        .then(function (registration) {
-          console.log('Service Worker Registered from home!!!');
-        });
-      navigator.serviceWorker.ready.then(function (registration) {
-        console.log('Service Worker Ready');
-      });
-    });
-  }
 }
 
 /**
@@ -191,7 +174,7 @@ const createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   const responsiveImage = createResponsiveImage(restaurant, image, 'home');
 
-  const favouriteHeart = createIsFavouriteHeart(restaurant);
+  const favouriteHeart = common.createIsFavouriteHeart(restaurant);
 
   imgContainer.append(responsiveImage);
   imgContainer.append(favouriteHeart)
@@ -220,36 +203,6 @@ const createRestaurantHTML = (restaurant) => {
   return li
 }
 
-const createIsFavouriteHeart = (restaurant) => {
-
-  console.log("In createIsFavouriteHeart!!", restaurant);
-  const favouriteHeart = document.createElement('div');
-
-  favouriteHeart.classList.add('fav-heart');
-  favouriteHeart.innerHTML = '&#x2764';
-  favouriteHeart.setAttribute('role', 'application');
-  favouriteHeart.setAttribute('title','Mark as favourite!');
-  favouriteHeart.setAttribute('id', `${restaurant.id}`);
-
-  if(restaurant.is_favorite){
-    favouriteHeart.setAttribute('title','Unmark favourite');
-    favouriteHeart.classList.add('heart-favourite');
-  }
-
-  favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
-
-  return favouriteHeart;
-}
-
-const toggleUIAndIDBFavorite = (event) => {
-
-  console.log("Clicked!!!");
-  const element = event.target;
-  const restaurantId = parseInt(element.id);
-  element.classList.toggle('heart-favourite');
-
-  toggleIDBFavoriteFlag(restaurantId)
-}
 
 /**
  * Add markers for current restaurants to the map.
