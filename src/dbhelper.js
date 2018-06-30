@@ -1,5 +1,4 @@
 import idb from 'idb';
-import UIRestaurantData from './uiRestaurantData';
 
 //const DATABASE_URL = `http://localhost:8000/data/restaurants.json`;
 const API_URL = `http://localhost:1337/restaurants`;
@@ -13,6 +12,10 @@ export function fetchRestaurants(callback) {
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
     upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
       .createIndex('by-id', 'id');
+
+    //Create the reviews object store from home Page as well
+    upgradeDB
+      .createObjectStore('reviews');
 
     fetchDataAndSaveToIDB(API_URL, dbPromise, callback);
   });
@@ -49,17 +52,22 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
     Promise.all(urlPromises)
       .then((responses) => {
         const clonedResponses = responses.map(r => r.clone());
-        clonedResponses.forEach(r => {
-          if(!r.ok)
-            callback(r.statusText, null);
-          else{
-            console.log("Preparing to save data to idb...", r);
-            saveDataToIDB(dbPromise, r);
-          }
-        });
         const jsonResponses = responses.map(r => r.json());
+
         Promise.all(jsonResponses)
-          .then(data => console.log("JsonData!!", data))
+          .then(data => {
+            console.log("JsonData!!", data);
+            callback(null, data);
+          })
+          .then(() => {
+            clonedResponses.forEach(response => {
+              if(!response.ok)
+                callback(response.statusText, null);
+              else{
+                saveDataToIDB(dbPromise, response);
+              }
+            });
+          })
           .catch(err => {
             console.error("Error!",err)
             callback(err, null);
@@ -67,6 +75,7 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
     });
   }
   else {
+    console.log("Home Page!!", fetchURL);
     fetch(fetchURL).then(response => {
       if (!response.ok) {
         const error = response.statusText;
@@ -94,18 +103,20 @@ function saveDataToIDB(dbPromise, response) {
 
   console.log("saveDataToIDB!!", response);
   dbPromise.then(db => {
-    const storesTX = db.transaction('stores', 'readwrite');
-    const reviewsTX = db.transaction('reviews', 'readwrite');
+    let reviewsTX;
+    if(response.url.includes('reviews')){
+      reviewsTX = db.transaction('reviews', 'readwrite');
+    }
 
+    const storesTX = db.transaction('stores', 'readwrite');
+  
     response
       .json()
       .then(data => {
 
         if (Array.isArray(data)) {
           if(response.url.includes('reviews')){
-            //data.forEach(d => {
-              reviewsTX.objectStore('reviews').put(data, data[0].restaurant_id);
-            //})
+              reviewsTX.objectStore('reviews').put(data, parseInt(data[0].restaurant_id));
           }else{
             data.forEach(d => {
               storesTX.objectStore('stores').put(d);
@@ -113,7 +124,6 @@ function saveDataToIDB(dbPromise, response) {
           }
         } else {
           storesTX.objectStore('stores').put(data);
-          //reviewsTX.objectStore('reviews').put(data.reviews, data.info.id);
         }
       })
       .catch(err => {
@@ -127,13 +137,15 @@ function saveDataToIDB(dbPromise, response) {
  */
 export const fetchRestaurantById = (id, callback) => {
   // fetch all restaurants with proper error handling.
+
   let dataFetched = false;
   const restaurantURL = `${API_URL}/${id}`;
   const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
   const combinedURLs = [restaurantURL, reviewsURL];
 
+  console.log("FETCHING BY ID!!", combinedURLs);
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
-
+    console.log("IDB OPENED!!");
     const storesDBExists = upgradeDB.objectStoreNames.contains('stores');
     const reviewsDBExists = upgradeDB.objectStoreNames.contains('reviews');
 
@@ -148,20 +160,25 @@ export const fetchRestaurantById = (id, callback) => {
 
     fetchDataAndSaveToIDB(combinedURLs, dbPromise, callback, dataFetched);
   });
+  console.log("DBPROMISE??",dbPromise);
 
   dbPromise.then(db => {
     const storesDBExists = db.objectStoreNames.contains('stores');
     const reviewsDBExists = db.objectStoreNames.contains('reviews');
 
-    if (!storesDBExists || !reviewsDBExists) return;
+    if(!storesDBExists || !reviewsDBExists) return;
+
+    
 
     const storesTX = db.transaction('stores').objectStore('stores').index('by-id').get(parseInt(id));
     const reviewsTX = db.transaction('reviews').objectStore('reviews').get(parseInt(id));
 
+    //Get all restaurant data from IDB..
     Promise.all([storesTX, reviewsTX])
       .then(data => {
-        console.log("Getting data from idb with Promise.all!!!", data);
-        if (!data || data.length === 0)
+        const isAnyNull = data.some(d => d === null || d === undefined);
+        if (!data || isAnyNull )
+          //Fetch again and store results
           fetchDataAndSaveToIDB(combinedURLs, dbPromise, callback, dataFetched);
         else
           callback(null, data);

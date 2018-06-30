@@ -1,6 +1,7 @@
 import { fetchRestaurantById, mapMarkerForRestaurant } from "./dbhelper.js"
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
+import UIRestaurantData from "./uiRestaurantData.js";
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
@@ -44,10 +45,10 @@ window.initMap = () => {
 
   self.map = new google.maps.Map(document.querySelector('.map'), {
     zoom: 16,
-    center: self.restaurant.latlng,
+    center: self.restaurant.info.latlng,
     scrollwheel: false
   });
-  mapMarkerForRestaurant(self.restaurant, self.map);
+  mapMarkerForRestaurant(self.restaurant.info, self.map);
 }
 
 /**
@@ -62,7 +63,7 @@ const fetchRestaurantFromURL = (callback) => {
 
   const id = getParameterByName('id');
   if (!id) {
-    error = 'No restaurant id in URL'
+    const error = 'No restaurant id in URL'
     callback(error, null);
     return;
   }
@@ -71,46 +72,44 @@ const fetchRestaurantFromURL = (callback) => {
     if (error)
       callback(error, null);
 
-    if (!restaurant)
-      return;
+    if (!restaurant){
+      callback(error, null);
+      console.error("No restaurant retrieved from DB...");
+    }
 
-    self.restaurant = restaurant;
-    fillBreadcrumb();
-    fillRestaurantHTML();
+    self.restaurant = new UIRestaurantData(restaurant[0], restaurant[1]);
+    const {info, reviews} = self.restaurant;
 
-    const dataFetchedEvent = new CustomEvent('dataFetch');
-    document.dispatchEvent(dataFetchedEvent);
-
-    callback(null, restaurant);
+    fillBreadcrumb(info);
+    fillRestaurantHTML(info);
+    fillReviewsHTML(reviews);
   });
 }
 
 /**
  * Create restaurant HTML and add it to the webpage
  */
-const fillRestaurantHTML = (restaurant = self.restaurant) => {
+const fillRestaurantHTML = (restaurantInfo) => {
   const name = document.querySelector('.restaurant-name');
-  name.innerHTML = restaurant.name;
+  name.innerHTML = restaurantInfo.name;
 
-  const image = createResponsiveImage(restaurant, document.querySelector('.restaurant-img'), 'info');
+  const image = createResponsiveImage(restaurantInfo, document.querySelector('.restaurant-img'), 'info');
   lazyLoadImages([image], true);
 
   const cuisine = document.querySelector('.restaurant-cuisine');
-  cuisine.innerHTML = restaurant.cuisine_type;
+  cuisine.innerHTML = restaurantInfo.cuisine_type;
 
   const address = document.querySelector('.restaurant-address');
-  address.innerHTML = restaurant.address;
+  address.innerHTML = restaurantInfo.address;
 
-  if (restaurant.operating_hours)
-    fillRestaurantHoursHTML();
-
-  fillReviewsHTML();
+  if (restaurantInfo.operating_hours)
+    fillRestaurantHoursHTML(restaurantInfo.operating_hours);
 }
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
+const fillRestaurantHoursHTML = (operatingHours) => {
   const hours = document.querySelector('.restaurant-hours');
   for (let key in operatingHours) {
     const row = document.createElement('tr');
@@ -130,7 +129,7 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews) => {
   const container = document.querySelector('.reviews-container');
 
   if (!reviews) {
@@ -163,8 +162,9 @@ const createReviewHTML = (review) => {
 
   const date = document.createElement('span');
   date.classList.add('review-date');
-  date.innerHTML = review.date;
-  date.setAttribute('aria-label', `Published on ${review.date}`);
+  const uiDate = parseUnixDate(review.createdAt);
+  date.innerHTML = uiDate;
+  date.setAttribute('aria-label', `Published on ${uiDate}`);
   reviewInfo.appendChild(date);
 
   const rating = createRatingStars(review);
@@ -202,10 +202,10 @@ const createRatingStars = ({ rating }) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-const fillBreadcrumb = (restaurant = self.restaurant) => {
+const fillBreadcrumb = (restaurantInfo) => {
   const breadcrumb = document.querySelector('.breadcrumb');
   const li = document.createElement('li');
-  li.innerHTML = restaurant.name;
+  li.innerHTML = restaurantInfo.name;
   breadcrumb.appendChild(li);
 }
 
@@ -227,4 +227,11 @@ const getParameterByName = (name, url) => {
     return '';
 
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+const parseUnixDate = (unixDate) => {
+
+  const date = new Date(unixDate);
+
+  return `${date.getFullYear()}/ ${date.getMonth()}/ ${date.getDay()}`;
 }
