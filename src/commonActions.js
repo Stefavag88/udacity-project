@@ -46,12 +46,12 @@ const toggleUIAndIDBFavorite = (event) => {
 
 
 
-    showNotification(message, 10000);
+    showNotification(message, element, 2500);
 
     toggleIDBFavoriteFlag(restaurantId)
 }
 
-export const showNotification = (message, duration = null) => {
+export const showNotification = (message, elementActivatedBy, duration = null) => {
     const notificationBox = document.querySelector('.notification-box');
     const closeBtn = document.querySelector('.notification-close');
     const messageBox = document.querySelector('.notification-message');
@@ -61,8 +61,12 @@ export const showNotification = (message, duration = null) => {
     closeBtn.removeEventListener('click', notificationCloseBtnEventHandler);
     closeBtn.addEventListener('click', notificationCloseBtnEventHandler);
 
+    const elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
+    notificationBox.setAttribute("style", `top:${elementActivatedPosition}px;`);
+    console.log("Position Clicked!!", elementActivatedPosition);
     notificationBox.classList.remove('slide-out');
     notificationBox.classList.add('slide-in');
+    notificationBox.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
 
     if(duration)
         setTimeout(() => {

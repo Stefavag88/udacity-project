@@ -1,5 +1,5 @@
 import { fetchRestaurantById,
-         mapMarkerForRestaurant } from "./dbhelper"
+         mapMarkerForRestaurant, updateReviewsById } from "./dbhelper"
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 import * as common from './commonActions';
@@ -130,6 +130,10 @@ const fillReviewsHTML = (reviews) => {
     return;
   }
   const ul = document.querySelector('.reviews-list');
+
+  while (ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -169,6 +173,64 @@ const createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
+}
+
+document.toggleReviewForm = (event = null) => {
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const reviewForm = document.querySelector('.create-review-form');
+
+  reviewForm.classList.toggle('slide-out');
+  reviewForm.classList.toggle('slide-in');
+  if(event){
+    const clickPositionY = event.target.getBoundingClientRect().top;
+    reviewForm.setAttribute("style", `top:${clickPositionY}px;`);
+  }
+  if(reviewForm.classList.contains('slide-in')){
+    reviewForm.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+  }
+}
+
+document.submitNewReview = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const form = event.target;
+  let params = (new URL(document.location)).searchParams;
+  let restaurantId = params.get("id");
+  const reviewerName = form.review_name.value;
+  const reviewComment = form.review_comments.value;
+  const reviewRating= form.star.value;
+
+  const postOptions = {
+    "restaurant_id": restaurantId,
+    "name": reviewerName,
+    "rating": reviewRating,
+    "comments": reviewComment
+  }
+
+  console.log(postOptions);
+
+  fetch(`http://localhost:1337/reviews/`, {
+    method: 'post',
+    body: JSON.stringify(postOptions)
+  })
+  .then(function(response) {
+    response.json()
+    .then(data => {
+      console.log("data!!",data);
+      if(data){
+        document.toggleReviewForm();
+        common.showNotification("review added",form, 5000);
+        updateReviewsById(parseInt(data.restaurant_id), fillReviewsHTML);
+      }else{
+        common.showNotification("oops!review not added..",form, 5000);
+      }
+
+    })
+  })
 }
 
 /**

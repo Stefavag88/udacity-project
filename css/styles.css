@@ -274,7 +274,6 @@ nav h1 a {
   position: absolute;
   transform: translateX(-100%);
   -webkit-transform: translateX(-100%);
-  top:25%;
   width:18em;
   color:  #fff;
   background-color: #5766A2;

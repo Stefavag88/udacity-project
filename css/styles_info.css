@@ -115,27 +115,32 @@ nav h1 a {
   background-color: #ccc;
   display: inline-block;
 }
-
-#map-toggle-btn{
+.btn-normal{
   align-self:center;
-  width:11em;
-  height:4em;
+  width:5em;
+  height:2em;
   border-radius: 0.2em;
   z-index: 100;
-  margin-top:0.5em;
-  margin-right: 1em;
   background-color: #5766A2;
   color: white;
-  font-weight: 700;
-  font-size: 24px;
+  font-weight: 500;
+  font-size: 14pt;
   cursor:pointer;
   border:none;
   box-shadow: 0 0.3em 0.6em #666;
   outline: none;
   transition: all 0.256s linear; 
 }
+#map-toggle-btn{
+  width:11em;
+  height:4em;
+  font-weight: 700;
+  font-size: 24px;
+  margin-top:0.5em;
+  margin-right: 1em;
+}
 
-#map-toggle-btn:hover{
+.btn-normal:hover{
   background-color: #252831;
   box-shadow: 0 0.3em 0.6em #ccc;
 }
@@ -148,8 +153,7 @@ nav h1 a {
   position: absolute;
   transform: translateX(-100%);
   -webkit-transform: translateX(-100%);
-  top:25%;
-  width:18em;
+  width:20em;
   color:  #fff;
   background-color: #5766A2;
   border-radius: 0.1em;
@@ -171,9 +175,10 @@ nav h1 a {
   width:2em;
   border-left: 1px solid #fff;
   color:#EA4335;
-  font-size:22pt;
+  font-size:24pt;
   float:right;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .slide-in {
@@ -187,20 +192,20 @@ nav h1 a {
 }
   
 @keyframes slide-in {
-  100% { transform: translateX(calc(50vw - 9em)); }
+  100% { transform: translateX(calc(50vw - 10em)); }
 }
 
 @-webkit-keyframes slide-in {
-  100% { -webkit-transform: translateX(calc(50vw - 9em)); }
+  100% { -webkit-transform: translateX(calc(50vw - 10em)); }
 }
   
 @keyframes slide-out {
-  0% { transform: translateX(-100%); }
+  0% { transform: translateX(-150%); }
   100% { transform: translateX(-150%); }
 }
 
 @-webkit-keyframes slide-out {
-  0% { -webkit-transform: translateX(-100%); }
+  0% { -webkit-transform: translateX(-150%); }
   100% { -webkit-transform: translateX(-150%); }
 }
 
@@ -341,6 +346,36 @@ nav h1 a {
   .reviews-container {
     padding: 1.5em;
   }
+
+  .reviews-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-circle{
+    width:2em;
+    height:2em;
+    border-radius: 50%;
+    z-index: 100;
+    margin-top:0.5em;
+    margin-right: 1em;
+    background-color: #5766A2;
+    color: white;
+    font-weight: 700;
+    font-size: 24px;
+    cursor:pointer;
+    border:none;
+    box-shadow: 0 0.2em 0.4em #fff;
+    outline: none;
+    transition: all 0.256s linear; 
+    float: right;
+    align-self: flex-end;
+  }
+  
+  .btn-circle:hover{
+    background-color: #252831;
+    box-shadow: 0 0.1em 0.2em #ccc;
+  }
   .reviews-container h2 {
     color: #5766A2;
     font-size: 20pt;
@@ -379,7 +414,6 @@ nav h1 a {
     padding:1em 1em 0 0;
     border-bottom:1px solid #f2f2f2;
   }
-  
   .rating-star{
     color:#5766A2;
     font-size:17pt;
@@ -387,7 +421,6 @@ nav h1 a {
   .review-comments{
     padding-left:0.5em;
   }
-  
   .restaurant-address , .restaurant-hours{
     align-self: flex-start;
     margin-top:-0.5em;
@@ -396,4 +429,124 @@ nav h1 a {
   .restaurant-hours td {
     color: #666;
   }
+
+/* -------------------------------------------REVIEW-FORM--------------------------------------------------*/
+
+.create-review-form{
+  position: absolute;
+  transform: translateX(-150%);
+  -webkit-transform: translateX(-150%);
+  background-color: #fff;
+  border:none;
+  border-radius:0.2em;
+  box-shadow: 0 0.3em 0.6em #666;
+  min-width:20em;
+  max-width:30em;
+  z-index:900;
+}
+
+@media screen and (min-width: 700px){
+  .create-review-form {
+    width:calc(50vw);
+  }
+}
+
+.review-form-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1.5em;
+}
+.create-review-form .btn-normal{
+  float:right;
+  margin:0 1.5em 1.5em 0;
+}
+.btn-white{
+  background-color: #fff;
+}
+.create-review-form h2{
+  margin-bottom:0.2em;
+  border-bottom: #ccc;
+  color: #5766A2;
+  padding:0.5em;
+  padding-bottom:0;
+  font-variant-caps: small-caps;
+}
+.review-form-group{
+  display: flex;
+  flex-direction: column;
+  padding: 1.5em;
+}
+.review-form-group>input{
+  border: none;
+  border-bottom: 1px solid #252831;
+}
+
+.review-form-group>textarea{
+  border: 1px solid #252831;
+  border-radius: 0.1em;
+}
+
+.review-form-group>input:focus{
+  outline:none;
+  box-shadow: 0 0.2em 0.4em #ccc;
+  border-bottom: 1px solid #5766A2;
+}
+
+.review-form-group>textarea:focus{
+  outline:none;
+  box-shadow: 0 0.2em 0.4em #ccc;
+  border: 1px solid #5766A2;
+}
+
+.review-form-group>label{
+  font-size:12pt;
+  color:#252831;
+}
+
+.txt-center {
+  text-align: center;
+}
+.hide {
+  display: none;
+}
+
+.clear {
+  float: none;
+  clear: both;
+}
+
+.review-rating-container {
+  width: 200px;
+  unicode-bidi: bidi-override;
+  direction: rtl;
+  text-align: left;
+  position: relative;
+}
+
+.review-rating-container > label {
+  display: inline;
+  font-size:20pt;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.review-rating-container > label:hover,
+.review-rating-container > label:hover ~ label,
+.review-rating-container > input.radio-btn:checked ~ label {
+  color: transparent;
+}
+
+.review-rating-container > label:hover:before,
+.review-rating-container > label:hover ~ label:before,
+.review-rating-container > input.radio-btn:checked ~ label:before,
+.review-rating-container > input.radio-btn:checked ~ label:before {
+  content: "\2605";
+  position: absolute;
+  left: 0;
+  color: #5766A2;
+}  
   

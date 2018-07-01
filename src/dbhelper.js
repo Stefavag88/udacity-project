@@ -120,9 +120,6 @@ function saveDataToIDB(dbPromise, response) {
             })
           }
          } 
-        //else {
-        //   storesTX.objectStore('stores').get()
-        // }
       })
       .catch(err => {
         console.log(`Could not save restaurant/s to idb...`, err);
@@ -180,6 +177,24 @@ export const fetchRestaurantById = (id, callback) => {
         callback(err, null);
       });
   });
+}
+
+export const updateReviewsById = (id, callback) => {
+  const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
+  fetch(reviewsURL, {cache:'reload'})
+    .then(response => {
+      response.json()
+              .then(data => {
+                idb.open('restaurants', IDB_VERSION)
+                   .then(dbPromise => {
+                     dbPromise.transaction('reviews', 'readwrite')
+                              .objectStore('reviews')
+                              .put(data, parseInt(data[0].restaurant_id));
+                   })
+                console.log("getReviewsById!!!", data);
+                callback(data);
+              })
+    })
 }
 
 /**
