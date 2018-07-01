@@ -2,9 +2,9 @@
 
 *{
   box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
 }
 body,td,th,p{
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	color: #333;
   line-height: 1.5;
@@ -15,7 +15,6 @@ body {
   margin: 0;
 }
 ul, li {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 10pt;
   color: #333;
 }
@@ -31,7 +30,6 @@ a img{
 	border: none 0 #fff;
 }
 h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, Helvetica, sans-serif;
   margin: 0 0 0.5em;
   font-weight:500;
 }
@@ -350,26 +348,24 @@ nav h1 a {
   .reviews-header{
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
   .btn-circle{
     width:2em;
     height:2em;
     border-radius: 50%;
     z-index: 100;
-    margin-top:0.5em;
-    margin-right: 1em;
     background-color: #5766A2;
     color: white;
     font-weight: 700;
     font-size: 24px;
     cursor:pointer;
     border:none;
-    box-shadow: 0 0.2em 0.4em #fff;
+    box-shadow: 0 0.2em 0.4em #666;
     outline: none;
     transition: all 0.256s linear; 
-    float: right;
-    align-self: flex-end;
+    margin-left: 0.5em;
+    margin-bottom: 0.7em;
   }
   
   .btn-circle:hover{
@@ -465,11 +461,10 @@ nav h1 a {
   background-color: #fff;
 }
 .create-review-form h2{
-  margin-bottom:0.2em;
   border-bottom: #ccc;
-  color: #5766A2;
-  padding:0.5em;
-  padding-bottom:0;
+  color: #252831;
+  padding:0.1em 0.5em;
+  margin-bottom:0;
   font-variant-caps: small-caps;
 }
 .review-form-group{
@@ -479,11 +474,11 @@ nav h1 a {
 }
 .review-form-group>input{
   border: none;
-  border-bottom: 1px solid #252831;
+  border-bottom: 1px solid #5766A2;
 }
 
 .review-form-group>textarea{
-  border: 1px solid #252831;
+  border: 1px solid #5766A2;
   border-radius: 0.1em;
 }
 

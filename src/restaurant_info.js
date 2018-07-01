@@ -211,8 +211,6 @@ document.submitNewReview = (event) => {
     "comments": reviewComment
   }
 
-  console.log(postOptions);
-
   fetch(`http://localhost:1337/reviews/`, {
     method: 'post',
     body: JSON.stringify(postOptions)
@@ -220,7 +218,6 @@ document.submitNewReview = (event) => {
   .then(function(response) {
     response.json()
     .then(data => {
-      console.log("data!!",data);
       if(data){
         document.toggleReviewForm();
         common.showNotification("review added",form, 5000);
@@ -286,5 +283,22 @@ const parseUnixDate = (unixDate) => {
 
   const date = new Date(unixDate);
 
-  return `${date.getFullYear()}/ ${date.getMonth()}/ ${date.getDay()}`;
+  const months = {
+    "0": "Jan",
+    "1": "Feb",
+    "2": "Mar",
+    "3": "Apr",
+    "4": "May",
+    "5": "Jun",
+    "6": "Jul",
+    "7": "Aug",
+    "8": "Sep",
+    "9": "Oct",
+    "10": "Nov",
+    "11": "Dec"
+  }
+
+  const month = months[date.getUTCMonth().toString()];
+
+  return `${date.getUTCDate()} ${month}, ${date.getFullYear()}`;
 }

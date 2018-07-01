@@ -56,7 +56,6 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
 
         Promise.all(jsonResponses)
           .then(data => {
-            console.log("JsonData!!", data);
             callback(null, data);
           })
           .then(() => {
@@ -122,7 +121,7 @@ function saveDataToIDB(dbPromise, response) {
          } 
       })
       .catch(err => {
-        console.log(`Could not save restaurant/s to idb...`, err);
+        console.error(`Could not save restaurant/s to idb...`, err);
       })
   })
 }
@@ -191,7 +190,6 @@ export const updateReviewsById = (id, callback) => {
                               .objectStore('reviews')
                               .put(data, parseInt(data[0].restaurant_id));
                    })
-                console.log("getReviewsById!!!", data);
                 callback(data);
               })
     })
@@ -322,7 +320,6 @@ export const toggleFavoriteRestaurant = (restaurantId, callback) => {
           {method:'PUT'}
           )
           .then((resp) => {
-            console.log("PUT IN SAILSDB??", resp);
             db.transaction('stores', 'readwrite')
             .objectStore('stores')
             .put(r)

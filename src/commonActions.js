@@ -16,7 +16,6 @@ export const registerSW = (page) => {
 
 export const createIsFavouriteHeart = (restaurant) => {
 
-    console.log("In createIsFavouriteHeart!!", restaurant);
     const favouriteHeart = document.createElement('div');
 
     favouriteHeart.classList.add('fav-heart');
@@ -62,8 +61,8 @@ export const showNotification = (message, elementActivatedBy, duration = null) =
     closeBtn.addEventListener('click', notificationCloseBtnEventHandler);
 
     const elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
+    
     notificationBox.setAttribute("style", `top:${elementActivatedPosition}px;`);
-    console.log("Position Clicked!!", elementActivatedPosition);
     notificationBox.classList.remove('slide-out');
     notificationBox.classList.add('slide-in');
     notificationBox.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
