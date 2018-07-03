@@ -1,13 +1,18 @@
-import { fetchRestaurantById,
-         mapMarkerForRestaurant, updateReviewsById } from "./dbhelper"
+import {
+  fetchRestaurantById,
+  mapMarkerForRestaurant, updateReviewsById
+} from "./dbhelper"
 import { createResponsiveImage, lazyLoadImages } from "./imageHelper";
 import "../css/styles_info.css";
 import * as common from './commonActions';
-import UIRestaurantData from "./uiRestaurantData.js";
+import UIRestaurantData from "./uiRestaurantData";
+import idb from 'idb';
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-  common.registerSW('Info');
+  registerSW('Info');
+  // const form = document.getElementById('review-form');
+  // form.addEventListener('submit', submitNewReview);
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -16,12 +21,74 @@ document.addEventListener('DOMContentLoaded', (event) => {
   });
 });
 
+const registerSW = (page) => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('DOMContentLoaded', () => {
+      navigator.serviceWorker.register('../sw.js')
+        .then(registration => {
+          console.info(`Service Worker Registered from ${page} Page!!!`, registration.active);
+          if ('sync' in registration) {
+            const form = document.getElementById('review-form');
+
+            form.addEventListener('submit', function (event) {
+
+              // if (window.navigator.onLine) {
+              //   submitNewReview(event);
+              //   return;
+              // }
+              console.log("SubmitEvent!!!");
+              event.preventDefault();
+              event.stopPropagation();
+              let params = (new URL(document.location)).searchParams;
+              let restaurantId = params.get("id");
+              const reviewerName = form.review_name.value;
+              const reviewComment = form.review_comments.value;
+              const reviewRating = form.star.value;
+
+              const postOptions = {
+                "restaurant_id": restaurantId,
+                "name": reviewerName,
+                "rating": reviewRating,
+                "comments": reviewComment
+              }
+
+              if (window.navigator.onLine) {
+                console.log("Navigator ONLINE!!!");
+                submitNewReview(form, postOptions);
+              } else {
+                console.log("Navigator OFFLINE!!!");
+                idb.open('restaurants', 1)
+                  .then(function (db) {
+                    console.log("db Promise!!", db);
+                    var transaction = db.transaction('outbox', 'readwrite');
+                    return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
+                  }).then(function () {
+                    document.toggleReviewForm();
+                    common.showNotification("review added", form, 2500);
+                    window.addEventListener('online', () => {
+                      console.log("online AGAIN!!");
+                      registration.sync.register('outbox');
+                    });
+                  })
+              }
+            });
+          }
+        })
+
+      navigator.serviceWorker.ready.then(registration => {
+        console.info('Service Worker Ready');
+
+      })
+    });
+  }
+}
+
 document.showMapOnScreen = () => {
   let mapDiv = document.querySelector('.map');
   let mapbtn = document.querySelector('#map-toggle-btn');
   mapbtn.classList.add("hidden");
   mapDiv.classList.toggle('hidden');
-  if(mapDiv.classList.contains("hidden")) return;
+  if (mapDiv.classList.contains("hidden")) return;
   window.initMap();
 }
 /**
@@ -60,13 +127,13 @@ const fetchRestaurantFromURL = (callback) => {
     if (error)
       callback(error, null);
 
-    if (!restaurant){
+    if (!restaurant) {
       callback(error, null);
       console.error("No restaurant retrieved from DB...");
     }
 
     self.restaurant = new UIRestaurantData(restaurant[0], restaurant[1]);
-    const {info, reviews} = self.restaurant;
+    const { info, reviews } = self.restaurant;
 
     fillBreadcrumb(info);
     fillRestaurantHTML(info);
@@ -176,7 +243,7 @@ const createReviewHTML = (review) => {
 }
 
 document.toggleReviewForm = (event = null) => {
-  if(event){
+  if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
@@ -184,50 +251,54 @@ document.toggleReviewForm = (event = null) => {
 
   reviewForm.classList.toggle('slide-out');
   reviewForm.classList.toggle('slide-in');
-  if(event){
+  if (event) {
     const clickPositionY = event.target.getBoundingClientRect().top;
     reviewForm.setAttribute("style", `top:${clickPositionY}px;`);
   }
-  if(reviewForm.classList.contains('slide-in')){
-    reviewForm.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+  if (reviewForm.classList.contains('slide-in')) {
+    reviewForm.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
   }
 }
 
-document.submitNewReview = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
+const submitNewReview = (form, postOptions) => {
 
-  const form = event.target;
-  let params = (new URL(document.location)).searchParams;
-  let restaurantId = params.get("id");
-  const reviewerName = form.review_name.value;
-  const reviewComment = form.review_comments.value;
-  const reviewRating= form.star.value;
+  console.log("EVENT!!!", event);
+  // if (event) {
+  //   event.preventDefault();
+  //   event.stopPropagation();
+  // }
 
-  const postOptions = {
-    "restaurant_id": restaurantId,
-    "name": reviewerName,
-    "rating": reviewRating,
-    "comments": reviewComment
-  }
+
+  // const form = document.getElementById('review-form');
+  // let params = (new URL(document.location)).searchParams;
+  // let restaurantId = params.get("id");
+  // const reviewerName = form.review_name.value;
+  // const reviewComment = form.review_comments.value;
+  // const reviewRating = form.star.value;
+
+  // const postOptions = {
+  //   "restaurant_id": restaurantId,
+  //   "name": reviewerName,
+  //   "rating": reviewRating,
+  //   "comments": reviewComment
+  // }
 
   fetch(`http://localhost:1337/reviews/`, {
     method: 'post',
     body: JSON.stringify(postOptions)
   })
-  .then(function(response) {
-    response.json()
-    .then(data => {
-      if(data){
-        document.toggleReviewForm();
-        common.showNotification("review added",form, 5000);
-        updateReviewsById(parseInt(data.restaurant_id), fillReviewsHTML);
-      }else{
-        common.showNotification("oops!review not added..",form, 5000);
-      }
-
+    .then(function (response) {
+      response.json()
+        .then(data => {
+          if (data) {
+            document.toggleReviewForm();
+            common.showNotification("review added", form, 2500);
+            updateReviewsById(parseInt(data.restaurant_id), fillReviewsHTML);
+          } else {
+            common.showNotification("oops!review not added..", form, 2500);
+          }
+        })
     })
-  })
 }
 
 /**

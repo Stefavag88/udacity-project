@@ -1,11 +1,29 @@
+importScripts('./src/idb.js');
+
 const version = "0.1.3";
 const cacheName = `reviews-${version}`;
 const imagesCache = `img-${version}`;
 const allCaches = [cacheName, imagesCache];
 
+const updateReviewsById = (id, callback = null) => {
+  const reviewsURL = `http://localhost:1337/reviews/?restaurant_id=${id}`;
+  fetch(reviewsURL, {cache:'reload'})
+    .then(response => {
+      response.json()
+              .then(data => {
+                  idb.open('restaurants', 1)
+                   .then(dbPromise => {
+                     dbPromise.transaction('reviews', 'readwrite')
+                              .objectStore('reviews')
+                              .put(data, parseInt(data[0].restaurant_id));
+                   })
+                if(callback)
+                  callback(data);
+              })
+    })
+}
 
 self.addEventListener('install', e => {
-  const timeStamp = Date.now();
   e.waitUntil(
     caches.open(cacheName).then(cache => {
       return cache.addAll([
@@ -23,6 +41,43 @@ self.addEventListener('install', e => {
         .catch((err) => console.error("Caching Error!!", err));
     })
   );
+});
+
+self.addEventListener('sync', function (event) {
+  if (event.tag == 'outbox') {
+    event.waitUntil(
+      idb.open('restaurants', 1)
+        .then(db => {
+          db.transaction('outbox', 'readonly')
+            .objectStore('outbox')
+            .getAll()
+            .then(reviews => {
+              console.log(reviews);
+               return Promise.all(reviews.map(review => {
+                 return fetch('http://localhost:1337/reviews', {
+                  method: 'POST',
+                  body: JSON.stringify(review)
+                }).then(function (response) {
+                  console.log("SW.JS LINE 61", response);
+                  return response.json();
+                }).then(function (data) {
+
+                  const restauRantid = parseInt(data.restaurant_id);
+                  console.log("FETCH FROM SW!!!", data);
+                    db.transaction('outbox', 'readwrite')
+                      .objectStore('outbox')
+                      .delete(restauRantid)
+                      .then(() => {
+
+                        updateReviewsById(restauRantid);
+                      })
+                  
+                })
+              }))
+            });
+        })
+    );
+  }
 });
 
 self.addEventListener('activate', event => {
@@ -67,28 +122,28 @@ self.addEventListener('fetch', event => {
 });
 
 const servePhoto = (request) => {
-  
+
   if (request.url.includes('mock')) {
-    
+
     const storageURL = request.url.replace('mock', '800w');
     return caches
-            .open(imagesCache)
-            .then(cache => cache.match(storageURL)
-              .then(response => {
-                if (response) return response;
+      .open(imagesCache)
+      .then(cache => cache.match(storageURL)
+        .then(response => {
+          if (response) return response;
 
-                fetch(request)
-                  .then(response => response);
-                return;
+          fetch(request)
+            .then(response => response);
+          return;
         }));
   }
 
   const storageURL = request.url.replace(/-\d+w\.jpg$/, '-800w.jpg');
-  
+
   return caches.open(imagesCache)
     .then(cache => cache.match(storageURL)
       .then(response => {
-        
+
         if (response) return response;
 
         fetch(request)

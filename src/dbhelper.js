@@ -17,6 +17,9 @@ export function fetchRestaurants(callback) {
     upgradeDB
       .createObjectStore('reviews');
 
+    upgradeDB
+      .createObjectStore('outbox');
+
     fetchDataAndSaveToIDB(API_URL, dbPromise, callback);
   });
 
@@ -140,6 +143,7 @@ export const fetchRestaurantById = (id, callback) => {
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
     const storesDBExists = upgradeDB.objectStoreNames.contains('stores');
     const reviewsDBExists = upgradeDB.objectStoreNames.contains('reviews');
+    const outboxDBExists = upgradeDB.objectStoreNames.contains('outbox');
 
     if (!storesDBExists)
       upgradeDB
@@ -149,6 +153,10 @@ export const fetchRestaurantById = (id, callback) => {
     if (!reviewsDBExists)
       upgradeDB
         .createObjectStore('reviews');
+
+    if (!outboxDBExists)
+      upgradeDB
+        .createObjectStore('outbox');
 
     fetchDataAndSaveToIDB(combinedURLs, dbPromise, callback, dataFetched);
   });
@@ -178,19 +186,21 @@ export const fetchRestaurantById = (id, callback) => {
   });
 }
 
-export const updateReviewsById = (id, callback) => {
+export const updateReviewsById = (id, callback = null) => {
   const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
   fetch(reviewsURL, {cache:'reload'})
     .then(response => {
       response.json()
               .then(data => {
+                console.log("GOT REVIEWS FROM SERVER!!", data);
                 idb.open('restaurants', IDB_VERSION)
                    .then(dbPromise => {
                      dbPromise.transaction('reviews', 'readwrite')
                               .objectStore('reviews')
                               .put(data, parseInt(data[0].restaurant_id));
                    })
-                callback(data);
+                if(callback)
+                  callback(data);
               })
     })
 }

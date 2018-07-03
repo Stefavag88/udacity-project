@@ -24,7 +24,8 @@ const config = {
         path: path.resolve(__dirname, 'dist')
     },
     performance: {
-        maxEntrypointSize: 280000
+        maxEntrypointSize: 280000,
+        maxAssetSize: 280000
     },
     optimization: {
         minimizer: [

@@ -6,7 +6,11 @@ export const registerSW = (page) => {
             navigator.serviceWorker.register('../sw.js')
                 .then(registration => {
                     console.info(`Service Worker Registered from ${page} Page!!!`);
-                });
+                    if('sync' in registration){
+
+                    }
+                })
+                .catch(err => {console.error(err);})
             navigator.serviceWorker.ready.then(registration => {
                 console.info('Service Worker Ready');
             });
@@ -60,9 +64,15 @@ export const showNotification = (message, elementActivatedBy, duration = null) =
     closeBtn.removeEventListener('click', notificationCloseBtnEventHandler);
     closeBtn.addEventListener('click', notificationCloseBtnEventHandler);
 
-    const elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
-    
-    notificationBox.setAttribute("style", `top:${elementActivatedPosition}px;`);
+    console.log("PASSES FORM??", elementActivatedBy);
+    let elementActivatedPosition;
+    if(elementActivatedBy){
+       // elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
+        notificationBox.setAttribute("style", `top:50%;`);
+    }else{
+        notificationBox.setAttribute("style", `top:50%;`);
+    }
+   
     notificationBox.classList.remove('slide-out');
     notificationBox.classList.add('slide-in');
     notificationBox.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
