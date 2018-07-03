@@ -68,7 +68,6 @@ self.addEventListener('sync', function (event) {
                       .objectStore('outbox')
                       .delete(restauRantid)
                       .then(() => {
-
                         updateReviewsById(restauRantid);
                       })
                   

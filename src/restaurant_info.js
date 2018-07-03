@@ -11,8 +11,6 @@ import idb from 'idb';
 document.addEventListener('DOMContentLoaded', (event) => {
 
   registerSW('Info');
-  // const form = document.getElementById('review-form');
-  // form.addEventListener('submit', submitNewReview);
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -31,11 +29,6 @@ const registerSW = (page) => {
             const form = document.getElementById('review-form');
 
             form.addEventListener('submit', function (event) {
-
-              // if (window.navigator.onLine) {
-              //   submitNewReview(event);
-              //   return;
-              // }
               console.log("SubmitEvent!!!");
               event.preventDefault();
               event.stopPropagation();
@@ -261,27 +254,6 @@ document.toggleReviewForm = (event = null) => {
 }
 
 const submitNewReview = (form, postOptions) => {
-
-  console.log("EVENT!!!", event);
-  // if (event) {
-  //   event.preventDefault();
-  //   event.stopPropagation();
-  // }
-
-
-  // const form = document.getElementById('review-form');
-  // let params = (new URL(document.location)).searchParams;
-  // let restaurantId = params.get("id");
-  // const reviewerName = form.review_name.value;
-  // const reviewComment = form.review_comments.value;
-  // const reviewRating = form.star.value;
-
-  // const postOptions = {
-  //   "restaurant_id": restaurantId,
-  //   "name": reviewerName,
-  //   "rating": reviewRating,
-  //   "comments": reviewComment
-  // }
 
   fetch(`http://localhost:1337/reviews/`, {
     method: 'post',

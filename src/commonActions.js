@@ -7,7 +7,10 @@ export const registerSW = (page) => {
                 .then(registration => {
                     console.info(`Service Worker Registered from ${page} Page!!!`);
                     if('sync' in registration){
-
+                        window.addEventListener('online', () => {
+                            console.log("online AGAIN!!");
+                            registration.sync.register('outbox');
+                          });
                     }
                 })
                 .catch(err => {console.error(err);})
