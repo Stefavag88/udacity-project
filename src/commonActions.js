@@ -1,4 +1,4 @@
-import {toggleFavoriteRestaurant as toggleIDBFavoriteFlag} from './dbhelper'; 
+import { toggleFavoriteRestaurant as toggleIDBFavoriteFlag } from './dbhelper';
 
 export const registerSW = (page) => {
     if ('serviceWorker' in navigator) {
@@ -6,14 +6,14 @@ export const registerSW = (page) => {
             navigator.serviceWorker.register('../sw.js')
                 .then(registration => {
                     console.info(`Service Worker Registered from ${page} Page!!!`);
-                    if('sync' in registration){
+                    if ('sync' in registration) {
                         window.addEventListener('online', () => {
                             console.log("online AGAIN!!");
                             registration.sync.register('outbox');
-                          });
+                        });
                     }
                 })
-                .catch(err => {console.error(err);})
+                .catch(err => { console.error(err); })
             navigator.serviceWorker.ready.then(registration => {
                 console.info('Service Worker Ready');
             });
@@ -36,25 +36,29 @@ export const createIsFavouriteHeart = (restaurant) => {
         favouriteHeart.classList.add('heart-favourite');
     }
 
-    favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
+    //favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
 
     return favouriteHeart;
 }
 
-const toggleUIAndIDBFavorite = (event) => {
-    const element = event.target;
-    const restaurantId = parseInt(element.id);
-    element.classList.toggle('heart-favourite');
+export const toggleUIAndIDBFavorite = (swRegistration) => {
+    return function (event) {
+        console.log("CLICKED BEFORE!!!", event.target.classList);
+        if(!event.target.classList.contains('fav-heart')) return;
+        console.log("clicked!!", event);
+        const element = event.target;
+        const restaurantId = parseInt(element.id);
+        element.classList.toggle('heart-favourite');
 
-    const message = element.classList.contains('heart-favourite')
-                        ? 'added to favourites'
-                        : 'removed from favourites';
+        const message = element.classList.contains('heart-favourite')
+            ? 'added to favourites'
+            : 'removed from favourites';
 
 
+        showNotification(message, element, 2500);
 
-    showNotification(message, element, 2500);
-
-    toggleIDBFavoriteFlag(restaurantId)
+        toggleIDBFavoriteFlag(restaurantId, swRegistration)
+    }
 }
 
 export const showNotification = (message, elementActivatedBy, duration = null) => {
@@ -69,18 +73,18 @@ export const showNotification = (message, elementActivatedBy, duration = null) =
 
     console.log("PASSES FORM??", elementActivatedBy);
     let elementActivatedPosition;
-    if(elementActivatedBy){
-       // elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
+    if (elementActivatedBy) {
+        // elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
         notificationBox.setAttribute("style", `top:50%;`);
-    }else{
+    } else {
         notificationBox.setAttribute("style", `top:50%;`);
     }
-   
+
     notificationBox.classList.remove('slide-out');
     notificationBox.classList.add('slide-in');
-    notificationBox.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+    notificationBox.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
 
-    if(duration)
+    if (duration)
         setTimeout(() => {
             notificationBox.classList.remove('slide-in');
             notificationBox.classList.add('slide-out');
@@ -90,8 +94,8 @@ export const showNotification = (message, elementActivatedBy, duration = null) =
 const notificationCloseBtnEventHandler = (event) => {
     const notificationBox = document.querySelector('.notification-box');
     const closeBtn = document.querySelector('.notification-close');
-    
-    if(notificationBox.classList.contains('slide-in')){
+
+    if (notificationBox.classList.contains('slide-in')) {
         notificationBox.classList.remove('slide-in');
         notificationBox.classList.add('slide-out');
     }

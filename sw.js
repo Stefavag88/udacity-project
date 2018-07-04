@@ -7,19 +7,19 @@ const allCaches = [cacheName, imagesCache];
 
 const updateReviewsById = (id, callback = null) => {
   const reviewsURL = `http://localhost:1337/reviews/?restaurant_id=${id}`;
-  fetch(reviewsURL, {cache:'reload'})
+  fetch(reviewsURL, { cache: 'reload' })
     .then(response => {
       response.json()
-              .then(data => {
-                  idb.open('restaurants', 1)
-                   .then(dbPromise => {
-                     dbPromise.transaction('reviews', 'readwrite')
-                              .objectStore('reviews')
-                              .put(data, parseInt(data[0].restaurant_id));
-                   })
-                if(callback)
-                  callback(data);
-              })
+        .then(data => {
+          idb.open('restaurants', 1)
+            .then(dbPromise => {
+              dbPromise.transaction('reviews', 'readwrite')
+                .objectStore('reviews')
+                .put(data, parseInt(data[0].restaurant_id));
+            })
+          if (callback)
+            callback(data);
+        })
     })
 }
 
@@ -51,27 +51,61 @@ self.addEventListener('sync', function (event) {
           db.transaction('outbox', 'readonly')
             .objectStore('outbox')
             .getAll()
-            .then(reviews => {
-              console.log(reviews);
-               return Promise.all(reviews.map(review => {
-                 return fetch('http://localhost:1337/reviews', {
-                  method: 'POST',
-                  body: JSON.stringify(review)
-                }).then(function (response) {
-                  console.log("SW.JS LINE 61", response);
-                  return response.json();
-                }).then(function (data) {
+            .then(messages => {
 
-                  const restauRantid = parseInt(data.restaurant_id);
-                  console.log("FETCH FROM SW!!!", data);
+              console.log(messages);
+              return Promise.all(messages.map(message => {
+                console.log("FROM OUTBOX!!", message);
+                if (message.is_favorite !== null || message.is_favorite !== undefined) {
+                  return fetch(`http://localhost:1337/restaurants/${message.restaurant_id}/?is_favorite=${message.is_favorite}`, {
+                    method: 'POST',
+                    body: JSON.stringify(message)
+                  }).then(response => {
+                    console.log("GETTING RESPONSE..", response);
+                    return response.json();
+                  }).then(data => {
+                    console.log("FROM SERVER!!", data);
+                    db.transaction('outbox', 'readwrite')
+                      .objectStore('outbox')
+                      .delete(`isFav-${message.restaurant_id}`)
+                      .then(() => {
+                        fetch(`http://localhost:1337/restaurants/${message.restaurant_id}`, {cache:'reload'})
+                          .then(response => {
+                            response.json()
+                              .then(data => {
+                                idb.open('restaurants', 1)
+                                  .then(db => {
+                                    db.transaction('stores', 'readwrite')
+                                      .objectStore('stores')
+                                      .put(data);
+                                  })
+                                // if (callback)
+                                //   callback(data);
+                              })
+                          })
+
+                      })
+                  })
+                }
+                else {
+                  return fetch('http://localhost:1337/reviews', {
+                    method: 'POST',
+                    body: JSON.stringify(message)
+                  }).then(function (response) {
+                    console.log("SW.JS LINE 61", response);
+                    return response.json();
+                  }).then(function (data) {
+
+                    const restauRantid = parseInt(data.restaurant_id);
+                    console.log("FETCH FROM SW!!!", data);
                     db.transaction('outbox', 'readwrite')
                       .objectStore('outbox')
                       .delete(restauRantid)
                       .then(() => {
                         updateReviewsById(restauRantid);
                       })
-                  
-                })
+                  })
+                }
               }))
             });
         })

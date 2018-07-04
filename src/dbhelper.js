@@ -121,7 +121,7 @@ function saveDataToIDB(dbPromise, response) {
               storesTX.objectStore('stores').put(d);
             })
           }
-         } 
+        }
       })
       .catch(err => {
         console.error(`Could not save restaurant/s to idb...`, err);
@@ -188,20 +188,20 @@ export const fetchRestaurantById = (id, callback) => {
 
 export const updateReviewsById = (id, callback = null) => {
   const reviewsURL = `${REVIEWS_URL}/?restaurant_id=${id}`;
-  fetch(reviewsURL, {cache:'reload'})
+  fetch(reviewsURL, { cache: 'reload' })
     .then(response => {
       response.json()
-              .then(data => {
-                console.log("GOT REVIEWS FROM SERVER!!", data);
-                idb.open('restaurants', IDB_VERSION)
-                   .then(dbPromise => {
-                     dbPromise.transaction('reviews', 'readwrite')
-                              .objectStore('reviews')
-                              .put(data, parseInt(data[0].restaurant_id));
-                   })
-                if(callback)
-                  callback(data);
-              })
+        .then(data => {
+          console.log("GOT REVIEWS FROM SERVER!!", data);
+          idb.open('restaurants', IDB_VERSION)
+            .then(dbPromise => {
+              dbPromise.transaction('reviews', 'readwrite')
+                .objectStore('reviews')
+                .put(data, parseInt(data[0].restaurant_id));
+            })
+          if (callback)
+            callback(data);
+        })
     })
 }
 
@@ -312,28 +312,56 @@ export const imageUrlForRestaurant = (restaurant) => {
 /**
  * Toggle Restaurant favourite flag.
  */
-export const toggleFavoriteRestaurant = (restaurantId, callback) => {
+export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
 
 
   const dbPromise = idb.open('restaurants', IDB_VERSION);
 
   dbPromise
     .then(db => {
-      const restaurantsStore = db.transaction('stores', 'readwrite')
+      db.transaction('stores', 'readwrite')
         .objectStore('stores')
         .index('by-id')
         .get(restaurantId)
         .then(r => {
+          if (window.navigator.onLine) {
+            fetch(`${API_URL}/${restaurantId}/?is_favorite=${!r.is_favorite}`,
+              { method: 'PUT' }
+            )
+              .then((resp) => {
+                db.transaction('stores', 'readwrite')
+                  .objectStore('stores')
+                  .put(r)
+              })
+          }
+          else {
+            db.transaction('outbox', 'readonly')
+              .objectStore('outbox')
+              .get(`isFav-${restaurantId}`)
+              .then(restaurant => {
+                console.log(restaurant);
+                const isFavorite = restaurant !== undefined 
+                                    ? !restaurant.is_favorite 
+                                    : !r.is_favorite;
 
-          r.is_favorite = !r.is_favorite;
-          fetch(`${API_URL}/${restaurantId}/?is_favorite=${r.is_favorite}`,
-          {method:'PUT'}
-          )
-          .then((resp) => {
-            db.transaction('stores', 'readwrite')
-            .objectStore('stores')
-            .put(r)
-          })
+                const objectForOutbox = {
+                  restaurant_id: restaurantId,
+                  is_favorite: isFavorite
+                }
+                console.log("OBJECT FOR OUTBOX!!", objectForOutbox);
+                db.transaction('outbox', 'readwrite')
+                  .objectStore('outbox')
+                  .put(objectForOutbox, `isFav-${restaurantId}`)
+                  .then(addedItem => {
+                    console.log("PUT IN IDB!!", addedItem);
+                    window.addEventListener('online', () => {
+                      console.log("online AGAIN!!");
+                      swRegistration.sync.register('outbox');
+                    });
+                  });
+              })
+
+          }
         })
         .catch(err => {
           console.error("Error in updating flag!!", err);

@@ -27,44 +27,10 @@ const registerSW = (page) => {
           console.info(`Service Worker Registered from ${page} Page!!!`, registration.active);
           if ('sync' in registration) {
             const form = document.getElementById('review-form');
+            form.addEventListener('submit', handleFormSubmissionCallback);
 
-            form.addEventListener('submit', function (event) {
-              console.log("SubmitEvent!!!");
-              event.preventDefault();
-              event.stopPropagation();
-              let params = (new URL(document.location)).searchParams;
-              let restaurantId = params.get("id");
-              const reviewerName = form.review_name.value;
-              const reviewComment = form.review_comments.value;
-              const reviewRating = form.star.value;
-
-              const postOptions = {
-                "restaurant_id": restaurantId,
-                "name": reviewerName,
-                "rating": reviewRating,
-                "comments": reviewComment
-              }
-
-              if (window.navigator.onLine) {
-                console.log("Navigator ONLINE!!!");
-                submitNewReview(form, postOptions);
-              } else {
-                console.log("Navigator OFFLINE!!!");
-                idb.open('restaurants', 1)
-                  .then(function (db) {
-                    console.log("db Promise!!", db);
-                    var transaction = db.transaction('outbox', 'readwrite');
-                    return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
-                  }).then(function () {
-                    document.toggleReviewForm();
-                    common.showNotification("review added", form, 2500);
-                    window.addEventListener('online', () => {
-                      console.log("online AGAIN!!");
-                      registration.sync.register('outbox');
-                    });
-                  })
-              }
-            });
+            //const favouriteHeart = document.querySelector('.fav-heart');
+            document.addEventListener('click', common.toggleUIAndIDBFavorite(registration));
           }
         })
 
@@ -73,6 +39,44 @@ const registerSW = (page) => {
 
       })
     });
+  }
+}
+
+const handleFormSubmissionCallback = event => {
+  console.log("SubmitEvent!!!");
+  event.preventDefault();
+  event.stopPropagation();
+  let params = (new URL(document.location)).searchParams;
+  let restaurantId = params.get("id");
+  const reviewerName = form.review_name.value;
+  const reviewComment = form.review_comments.value;
+  const reviewRating = form.star.value;
+
+  const postOptions = {
+    "restaurant_id": restaurantId,
+    "name": reviewerName,
+    "rating": reviewRating,
+    "comments": reviewComment
+  }
+
+  if (window.navigator.onLine) {
+    console.log("Navigator ONLINE!!!");
+    submitNewReview(form, postOptions);
+  } else {
+    console.log("Navigator OFFLINE!!!");
+    idb.open('restaurants', 1)
+      .then(function (db) {
+        console.log("db Promise!!", db);
+        var transaction = db.transaction('outbox', 'readwrite');
+        return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
+      }).then(function () {
+        document.toggleReviewForm();
+        common.showNotification("review added", form, 2500);
+        window.addEventListener('online', () => {
+          console.log("online AGAIN!!");
+          registration.sync.register('outbox');
+        });
+      })
   }
 }
 
