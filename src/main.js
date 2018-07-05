@@ -126,8 +126,8 @@ const updateRestaurants = () => {
     }
 
     resetRestaurants(restaurants);
-    fillRestaurantsHTML();
-    addMarkersToMap();
+    fillRestaurantsHTML(restaurants);
+    addMarkersToMap(restaurants);
   })
 }
 
@@ -153,6 +153,7 @@ const resetRestaurants = (restaurants) => {
  */
 const fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.querySelector('.restaurants-list');
+  console.log("FillresturantHTML!!", restaurants);
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });

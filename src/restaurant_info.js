@@ -26,66 +26,78 @@ const registerSW = (page) => {
         .then(registration => {
           console.info(`Service Worker Registered from ${page} Page!!!`, registration.active);
           if ('sync' in registration) {
-            const form = document.getElementById('review-form');
-            form.addEventListener('submit', handleFormSubmissionCallback);
 
-            //const favouriteHeart = document.querySelector('.fav-heart');
+            if (page === 'Info') {
+              const form = document.getElementById('review-form');
+              form.addEventListener('submit', handleFormSubmissionCallback(registration));
+            }
+
             document.addEventListener('click', common.toggleUIAndIDBFavorite(registration));
+            window.addEventListener('online', () => {
+              console.log("online AGAIN!!");
+              registration.sync.register('outbox');
+            });
           }
         })
 
       navigator.serviceWorker.ready.then(registration => {
         console.info('Service Worker Ready');
-
       })
     });
   }
 }
 
-const handleFormSubmissionCallback = event => {
-  console.log("SubmitEvent!!!");
-  event.preventDefault();
-  event.stopPropagation();
-  let params = (new URL(document.location)).searchParams;
-  let restaurantId = params.get("id");
-  const reviewerName = form.review_name.value;
-  const reviewComment = form.review_comments.value;
-  const reviewRating = form.star.value;
+const handleFormSubmissionCallback = swRegistration => {
 
-  const postOptions = {
-    "restaurant_id": restaurantId,
-    "name": reviewerName,
-    "rating": reviewRating,
-    "comments": reviewComment
-  }
+  return event => {
+    console.log("SubmitEvent!!!");
+    event.preventDefault();
+    event.stopPropagation();
 
-  if (window.navigator.onLine) {
-    console.log("Navigator ONLINE!!!");
-    submitNewReview(form, postOptions);
-  } else {
-    console.log("Navigator OFFLINE!!!");
-    idb.open('restaurants', 1)
-      .then(function (db) {
-        console.log("db Promise!!", db);
-        var transaction = db.transaction('outbox', 'readwrite');
-        return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
-      }).then(function () {
-        document.toggleReviewForm();
-        common.showNotification("review added", form, 2500);
-        window.addEventListener('online', () => {
-          console.log("online AGAIN!!");
-          registration.sync.register('outbox');
-        });
-      })
+    let params = (new URL(document.location)).searchParams;
+    let restaurantId = params.get("id");
+    const reviewerName = form.review_name.value;
+    const reviewComment = form.review_comments.value;
+    const reviewRating = form.star.value;
+  
+    const postOptions = {
+      "restaurant_id": restaurantId,
+      "name": reviewerName,
+      "rating": reviewRating,
+      "comments": reviewComment
+    }
+  
+    if (window.navigator.onLine) {
+      console.log("Navigator ONLINE!!!");
+      submitNewReview(form, postOptions);
+    } else {
+      console.log("Navigator OFFLINE!!!");
+      saveReviewToOutbox(swRegistration, postOptions);
+    }
   }
+}
+
+const saveReviewToOutbox = (swRegistration, postOptions) => {
+  idb.open('restaurants', 1)
+    .then(db => {
+      console.log("db Promise!!", db);
+      var transaction = db.transaction('outbox', 'readwrite');
+      return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
+    }).then(() => {
+      document.toggleReviewForm();
+      common.showNotification("review added", form, 2500);
+    })
 }
 
 document.showMapOnScreen = () => {
   let mapDiv = document.querySelector('.map');
   let mapbtn = document.querySelector('#map-toggle-btn');
+
   mapbtn.classList.add("hidden");
   mapDiv.classList.toggle('hidden');
+
   if (mapDiv.classList.contains("hidden")) return;
+
   window.initMap();
 }
 /**

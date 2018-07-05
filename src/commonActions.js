@@ -11,6 +11,8 @@ export const registerSW = (page) => {
                             console.log("online AGAIN!!");
                             registration.sync.register('outbox');
                         });
+
+                        document.addEventListener('click', toggleUIAndIDBFavorite(registration));
                     }
                 })
                 .catch(err => { console.error(err); })
@@ -22,7 +24,6 @@ export const registerSW = (page) => {
 }
 
 export const createIsFavouriteHeart = (restaurant) => {
-
     const favouriteHeart = document.createElement('div');
 
     favouriteHeart.classList.add('fav-heart');
@@ -31,14 +32,25 @@ export const createIsFavouriteHeart = (restaurant) => {
     favouriteHeart.setAttribute('title', 'Mark as favourite!');
     favouriteHeart.setAttribute('id', `${restaurant.id}`);
 
-    if (restaurant.is_favorite) {
+    if (parseBool(restaurant.is_favorite)) {
         favouriteHeart.setAttribute('title', 'Unmark favourite');
         favouriteHeart.classList.add('heart-favourite');
     }
 
-    //favouriteHeart.addEventListener('click', toggleUIAndIDBFavorite)
-
     return favouriteHeart;
+}
+
+const parseBool = (value) => {
+    if(typeof value === 'boolean') return value;
+
+    switch(value){
+        case 'true':
+            return true;
+        case 'false':
+            return false;
+        default:
+            return null;
+    }
 }
 
 export const toggleUIAndIDBFavorite = (swRegistration) => {

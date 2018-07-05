@@ -314,7 +314,6 @@ export const imageUrlForRestaurant = (restaurant) => {
  */
 export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
 
-
   const dbPromise = idb.open('restaurants', IDB_VERSION);
 
   dbPromise
@@ -324,8 +323,10 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
         .index('by-id')
         .get(restaurantId)
         .then(r => {
+          r.is_favorite = negateValue(r.is_favorite);
+          console.log("Toggles value!!", r.is_favorite);
           if (window.navigator.onLine) {
-            fetch(`${API_URL}/${restaurantId}/?is_favorite=${!r.is_favorite}`,
+            fetch(`${API_URL}/${restaurantId}/?is_favorite=${r.is_favorite}`,
               { method: 'PUT' }
             )
               .then((resp) => {
@@ -341,8 +342,8 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
               .then(restaurant => {
                 console.log(restaurant);
                 const isFavorite = restaurant !== undefined 
-                                    ? !restaurant.is_favorite 
-                                    : !r.is_favorite;
+                                    ? negateValue(restaurant.is_favorite) 
+                                    : r.is_favorite;
 
                 const objectForOutbox = {
                   restaurant_id: restaurantId,
@@ -367,6 +368,25 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
           console.error("Error in updating flag!!", err);
         })
     })
+}
+
+const parseBool = value => {
+  if(typeof value === 'boolean') return value;
+
+  switch(value){
+      case 'true':
+          return true;
+      case 'false':
+          return false;
+      default:
+          return null;
+  }
+}
+
+const negateValue = value => {
+  const correctValue = parseBool(value);
+
+  return !correctValue;
 }
 
 /**
