@@ -51,9 +51,10 @@ const handleFormSubmissionCallback = swRegistration => {
   return event => {
     event.preventDefault();
     event.stopPropagation();
-
+    
     let params = (new URL(document.location)).searchParams;
     let restaurantId = params.get("id");
+    const form = document.getElementById('review-form');
     const reviewerName = form.review_name.value;
     const reviewComment = form.review_comments.value;
     const reviewRating = form.star.value;
@@ -68,12 +69,12 @@ const handleFormSubmissionCallback = swRegistration => {
     if (window.navigator.onLine) {
       submitNewReview(form, postOptions);
     } else {
-      saveReviewToOutbox(postOptions);
+      saveReviewToOutbox(form, postOptions);
     }
   }
 }
 
-const saveReviewToOutbox = (postOptions) => {
+const saveReviewToOutbox = (form, postOptions) => {
   idb.open('restaurants', 1)
     .then(db => {
       var transaction = db.transaction('outbox', 'readwrite');

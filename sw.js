@@ -53,7 +53,7 @@ self.addEventListener('sync', event => {
             .getAll()
             .then(messages => {
               return Promise.all(messages.map(message => {
-                if (message.is_favorite !== null || message.is_favorite !== undefined) {
+                if (message.is_favorite !== null && message.is_favorite !== undefined) {
                   return fetch(`http://localhost:1337/restaurants/${message.restaurant_id}/?is_favorite=${message.is_favorite}`, {
                     method: 'POST',
                     body: JSON.stringify(message)
@@ -74,11 +74,8 @@ self.addEventListener('sync', event => {
                                       .objectStore('stores')
                                       .put(data);
                                   })
-                                // if (callback)
-                                //   callback(data);
                               })
                           })
-
                       })
                   })
                 }

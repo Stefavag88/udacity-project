@@ -40,9 +40,9 @@ export const createIsFavouriteHeart = (restaurant) => {
 }
 
 const parseBool = (value) => {
-    if(typeof value === 'boolean') return value;
+    if (typeof value === 'boolean') return value;
 
-    switch(value){
+    switch (value) {
         case 'true':
             return true;
         case 'false':
@@ -54,7 +54,7 @@ const parseBool = (value) => {
 
 export const toggleUIAndIDBFavorite = (swRegistration) => {
     return event => {
-        if(!event.target.classList.contains('fav-heart')) return;
+        if (!event.target.classList.contains('fav-heart')) return;
 
         const element = event.target;
         const restaurantId = parseInt(element.id);
