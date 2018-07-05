@@ -8,7 +8,6 @@ export const registerSW = (page) => {
                     console.info(`Service Worker Registered from ${page} Page!!!`);
                     if ('sync' in registration) {
                         window.addEventListener('online', () => {
-                            console.log("online AGAIN!!");
                             registration.sync.register('outbox');
                         });
 
@@ -54,10 +53,9 @@ const parseBool = (value) => {
 }
 
 export const toggleUIAndIDBFavorite = (swRegistration) => {
-    return function (event) {
-        console.log("CLICKED BEFORE!!!", event.target.classList);
+    return event => {
         if(!event.target.classList.contains('fav-heart')) return;
-        console.log("clicked!!", event);
+
         const element = event.target;
         const restaurantId = parseInt(element.id);
         element.classList.toggle('heart-favourite');
@@ -83,15 +81,8 @@ export const showNotification = (message, elementActivatedBy, duration = null) =
     closeBtn.removeEventListener('click', notificationCloseBtnEventHandler);
     closeBtn.addEventListener('click', notificationCloseBtnEventHandler);
 
-    console.log("PASSES FORM??", elementActivatedBy);
-    let elementActivatedPosition;
-    if (elementActivatedBy) {
-        // elementActivatedPosition = elementActivatedBy.getBoundingClientRect().top;
-        notificationBox.setAttribute("style", `top:50%;`);
-    } else {
-        notificationBox.setAttribute("style", `top:50%;`);
-    }
 
+    notificationBox.setAttribute("style", `top:50%;`);
     notificationBox.classList.remove('slide-out');
     notificationBox.classList.add('slide-in');
     notificationBox.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });

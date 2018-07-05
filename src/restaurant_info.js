@@ -34,7 +34,6 @@ const registerSW = (page) => {
 
             document.addEventListener('click', common.toggleUIAndIDBFavorite(registration));
             window.addEventListener('online', () => {
-              console.log("online AGAIN!!");
               registration.sync.register('outbox');
             });
           }
@@ -50,7 +49,6 @@ const registerSW = (page) => {
 const handleFormSubmissionCallback = swRegistration => {
 
   return event => {
-    console.log("SubmitEvent!!!");
     event.preventDefault();
     event.stopPropagation();
 
@@ -68,19 +66,16 @@ const handleFormSubmissionCallback = swRegistration => {
     }
   
     if (window.navigator.onLine) {
-      console.log("Navigator ONLINE!!!");
       submitNewReview(form, postOptions);
     } else {
-      console.log("Navigator OFFLINE!!!");
-      saveReviewToOutbox(swRegistration, postOptions);
+      saveReviewToOutbox(postOptions);
     }
   }
 }
 
-const saveReviewToOutbox = (swRegistration, postOptions) => {
+const saveReviewToOutbox = (postOptions) => {
   idb.open('restaurants', 1)
     .then(db => {
-      console.log("db Promise!!", db);
       var transaction = db.transaction('outbox', 'readwrite');
       return transaction.objectStore('outbox').add(postOptions, parseInt(postOptions.restaurant_id));
     }).then(() => {

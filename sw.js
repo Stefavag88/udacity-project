@@ -52,19 +52,14 @@ self.addEventListener('sync', function (event) {
             .objectStore('outbox')
             .getAll()
             .then(messages => {
-
-              console.log(messages);
               return Promise.all(messages.map(message => {
-                console.log("FROM OUTBOX!!", message);
                 if (message.is_favorite !== null || message.is_favorite !== undefined) {
                   return fetch(`http://localhost:1337/restaurants/${message.restaurant_id}/?is_favorite=${message.is_favorite}`, {
                     method: 'POST',
                     body: JSON.stringify(message)
                   }).then(response => {
-                    console.log("GETTING RESPONSE..", response);
                     return response.json();
                   }).then(data => {
-                    console.log("FROM SERVER!!", data);
                     db.transaction('outbox', 'readwrite')
                       .objectStore('outbox')
                       .delete(`isFav-${message.restaurant_id}`)
@@ -92,17 +87,14 @@ self.addEventListener('sync', function (event) {
                     method: 'POST',
                     body: JSON.stringify(message)
                   }).then(function (response) {
-                    console.log("SW.JS LINE 61", response);
                     return response.json();
                   }).then(function (data) {
-
-                    const restauRantid = parseInt(data.restaurant_id);
-                    console.log("FETCH FROM SW!!!", data);
+                    const restaurantid = parseInt(data.restaurant_id);
                     db.transaction('outbox', 'readwrite')
                       .objectStore('outbox')
-                      .delete(restauRantid)
+                      .delete(restaurantid)
                       .then(() => {
-                        updateReviewsById(restauRantid);
+                        updateReviewsById(restaurantid);
                       })
                   })
                 }
@@ -150,7 +142,7 @@ self.addEventListener('fetch', event => {
         }
         return customResponse || fetch(event.request);
       })
-      .catch(err => console.log("SW Error!!", err))
+      .catch(err => console.error("SW Error!!", err))
   );
 });
 

@@ -192,7 +192,6 @@ export const updateReviewsById = (id, callback = null) => {
     .then(response => {
       response.json()
         .then(data => {
-          console.log("GOT REVIEWS FROM SERVER!!", data);
           idb.open('restaurants', IDB_VERSION)
             .then(dbPromise => {
               dbPromise.transaction('reviews', 'readwrite')
@@ -324,7 +323,7 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
         .get(restaurantId)
         .then(r => {
           r.is_favorite = negateValue(r.is_favorite);
-          console.log("Toggles value!!", r.is_favorite);
+
           if (window.navigator.onLine) {
             fetch(`${API_URL}/${restaurantId}/?is_favorite=${r.is_favorite}`,
               { method: 'PUT' }
@@ -340,7 +339,7 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
               .objectStore('outbox')
               .get(`isFav-${restaurantId}`)
               .then(restaurant => {
-                console.log(restaurant);
+
                 const isFavorite = restaurant !== undefined 
                                     ? negateValue(restaurant.is_favorite) 
                                     : r.is_favorite;
@@ -349,17 +348,15 @@ export const toggleFavoriteRestaurant = (restaurantId, swRegistration) => {
                   restaurant_id: restaurantId,
                   is_favorite: isFavorite
                 }
-                console.log("OBJECT FOR OUTBOX!!", objectForOutbox);
+
                 db.transaction('outbox', 'readwrite')
                   .objectStore('outbox')
-                  .put(objectForOutbox, `isFav-${restaurantId}`)
-                  .then(addedItem => {
-                    console.log("PUT IN IDB!!", addedItem);
-                    window.addEventListener('online', () => {
-                      console.log("online AGAIN!!");
-                      swRegistration.sync.register('outbox');
-                    });
-                  });
+                  .put(objectForOutbox, `isFav-${restaurantId}`);
+                  // .then(addedItem => {
+                  //   window.addEventListener('online', () => {
+                  //     swRegistration.sync.register('outbox');
+                  //   });
+                  // });
               })
 
           }
