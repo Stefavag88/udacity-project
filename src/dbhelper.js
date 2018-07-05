@@ -7,7 +7,7 @@ const REVIEWS_URL = `http://localhost:1337/reviews`;
 /**
  * Fetch all restaurants.
  */
-export function fetchRestaurants(callback) {
+export const fetchRestaurants = (callback) => {
 
   const dbPromise = idb.open('restaurants', IDB_VERSION, upgradeDB => {
     upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
@@ -48,7 +48,7 @@ export function fetchRestaurants(callback) {
   })
 }
 
-function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnce = null) {
+const fetchDataAndSaveToIDB = (fetchURL, dbPromise, callback, ensureFetchDataOnce = null) => {
 
   if (Array.isArray(fetchURL)) {
     const urlPromises = fetchURL.map(url => fetch(url));
@@ -100,7 +100,7 @@ function fetchDataAndSaveToIDB(fetchURL, dbPromise, callback, ensureFetchDataOnc
   }
 }
 
-function saveDataToIDB(dbPromise, response) {
+const saveDataToIDB = (dbPromise, response) => {
   dbPromise.then(db => {
     let reviewsTX;
     if (response.url.includes('reviews')) {
@@ -239,7 +239,7 @@ export const fetchRestaurantByNeighborhood = (neighborhood, callback) => {
 /**
  * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
  */
-export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+export const fetchRestaurantByCuisineAndNeighborhood = (cuisine, neighborhood, callback) => {
   // Fetch all restaurants
   fetchRestaurants((error, restaurants) => {
     if (error) {
@@ -261,7 +261,7 @@ export function fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, c
 /**
  * Fetch all neighborhoods with proper error handling.
  */
-export function fetchNeighborhoods(callback) {
+export const fetchNeighborhoods = (callback) => {
   // Fetch all restaurants
   fetchRestaurants((error, restaurants) => {
     if (error) {

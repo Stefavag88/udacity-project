@@ -43,7 +43,7 @@ self.addEventListener('install', e => {
   );
 });
 
-self.addEventListener('sync', function (event) {
+self.addEventListener('sync', event => {
   if (event.tag == 'outbox') {
     event.waitUntil(
       idb.open('restaurants', 1)
@@ -86,9 +86,9 @@ self.addEventListener('sync', function (event) {
                   return fetch('http://localhost:1337/reviews', {
                     method: 'POST',
                     body: JSON.stringify(message)
-                  }).then(function (response) {
+                  }).then(response => {
                     return response.json();
-                  }).then(function (data) {
+                  }).then(data => {
                     const restaurantid = parseInt(data.restaurant_id);
                     db.transaction('outbox', 'readwrite')
                       .objectStore('outbox')
