@@ -13,7 +13,6 @@ export const fetchRestaurants = (callback) => {
     upgradeDB.createObjectStore('stores', { keyPath: 'id', autoIncrement: true })
       .createIndex('by-id', 'id');
 
-    //Create the reviews object store from home Page as well
     upgradeDB
       .createObjectStore('reviews');
 
